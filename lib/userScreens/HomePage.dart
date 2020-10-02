@@ -8,6 +8,7 @@ import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';
 import 'package:globtorch/userScreens/reports.dart';
+import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -428,13 +429,18 @@ class _HomePageState extends State<HomePage> {
               new ListTile(
                 leading: new CircleAvatar(
                   child: new Icon(
-                    Icons.lock,
+                    Icons.web,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
                 title: new Text("External Resources"),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => ExtResources()));
+                },
               ),
               new ListTile(
                 leading: new CircleAvatar(
