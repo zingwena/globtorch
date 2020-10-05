@@ -30,7 +30,7 @@ class _ListCoursesState extends State<ListCourses> {
     http.Response response =
         await http.get(url, headers: {"Accept": "application/json"});
     var json = jsonDecode(response.body);
-    print(json);
+    // print(json);
     setState(() {
       listcourses = json;
     });

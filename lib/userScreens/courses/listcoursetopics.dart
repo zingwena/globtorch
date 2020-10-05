@@ -161,6 +161,4 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
           }),
     );
   }
-
-  Future getTopicContent() async {}
 }

@@ -78,6 +78,7 @@ class ListSubjects extends StatelessWidget {
                                           "Accept": "application/json"
                                         });
                                         var json = jsonDecode(response.body);
+
                                         List listassignments =
                                             json["assignments"];
                                         Navigator.push(

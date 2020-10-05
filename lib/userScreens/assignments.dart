@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:globtorch/userScreens/assignmentdetails.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Assignments extends StatelessWidget {
   final listasignmnts;
@@ -38,7 +43,26 @@ class Assignments extends StatelessWidget {
                               ),
                             ],
                           ),
-                          onTap: () {},
+                          onTap: () async {
+                            int assignmentId = listasignmnts[index]['id'];
+                            String assignmentIdStrng = assignmentId.toString();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            var token = prefs.getString('api_token');
+                            final urlAssignment =
+                                "https://globtorch.com/api/assignments/$assignmentIdStrng?api_token=$token";
+                            http.Response response = await http.get(
+                                urlAssignment,
+                                headers: {"Accept": "application/json"});
+                            var json = jsonDecode(response.body);
+                            print(json['name']);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        AssignmentDetails(
+                                            assignmentdetails: json)));
+                          },
                         ),
                       ),
                     )
