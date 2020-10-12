@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 import 'package:globtorch/userScreens/courses/topicsview.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListTopicsContent extends StatefulWidget {
@@ -24,6 +27,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
   _ListTopicsContentState({this.coursetopics});
   bool visible = false;
   bool isLoading = true;
+  String localPath;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +144,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                   Icon(Icons.assignment_ind),
                                   Expanded(
                                     child: FlatButton(
-                                        onPressed: () {},
+                                        onPressed: () async {},
                                         child: Text("Test"),
                                         color: Colors.red,
                                         shape: new RoundedRectangleBorder(

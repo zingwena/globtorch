@@ -8,7 +8,9 @@ import 'userScreens/welcomePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize();
+  await FlutterDownloader.initialize(
+    debug: true,
+  );
   runApp(
     MaterialApp(
       title: 'Globtorch Mobile',

@@ -124,7 +124,7 @@ class _ListCoursesState extends State<ListCourses> {
                                       child: new RaisedButton(
                                           padding: const EdgeInsets.all(8.0),
                                           textColor: Colors.white,
-                                          color: Colors.cyanAccent,
+                                          color: Colors.red,
                                           onPressed: () async {
                                             int id = listcourses[index]['id'];
                                             String stringId = id.toString();
@@ -164,14 +164,6 @@ class _ListCoursesState extends State<ListCourses> {
                                     Container(
                                       width: 30.0,
                                     ),
-                                    /* Expanded(
-                                      child: RaisedButton(
-                                          padding: const EdgeInsets.all(8.0),
-                                          textColor: Colors.white,
-                                          color: Colors.red,
-                                          onPressed: () {},
-                                          child: new Text("Pay Now")),
-                                    ),*/
                                   ],
                                 ),
                               ],

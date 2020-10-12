@@ -50,13 +50,14 @@ class ListSubjects extends StatelessWidget {
                                                   coursechapters: coursechap,
                                                 )));
                                   },
-                                  child: const Text('View Chapters'),
+                                  child: const Text('View '),
                                   color: Colors.green,
                                   shape: new RoundedRectangleBorder(
                                       borderRadius:
                                           new BorderRadius.circular(30.0)),
                                   textColor: Colors.white,
                                 )),
+                            dense: true,
                             trailing: Column(
                               children: <Widget>[
                                 Icon(Icons.assignment_ind),

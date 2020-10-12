@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/assignments.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';

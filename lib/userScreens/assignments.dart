@@ -55,13 +55,14 @@ class Assignments extends StatelessWidget {
                                 urlAssignment,
                                 headers: {"Accept": "application/json"});
                             var json = jsonDecode(response.body);
-                            print(json['name']);
+                            final assgnmentJson = json;
+                            //print(assgnmentJson['name']);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
                                         AssignmentDetails(
-                                            assignmentdetails: json)));
+                                            assignmentdetails: assgnmentJson)));
                           },
                         ),
                       ),

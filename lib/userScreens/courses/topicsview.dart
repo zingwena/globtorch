@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TopicViw extends StatefulWidget {
@@ -58,42 +59,46 @@ class _TopicViwState extends State<TopicViw> {
                             shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(50.0)),
                             onPressed: () async {
-                              for (var contentloop in contentname['topic']
-                                  ['contents']) {
-                                if (contentloop['type'] == 'pdf') {
-                                  var contentID = contentloop['id'];
-                                  String stringcontentID = contentID.toString();
+                              final status = await Permission.storage.request();
+                              if (status.isGranted) {
+                                for (var contentloop in contentname['topic']
+                                    ['contents']) {
+                                  if (contentloop['type'] == 'pdf') {
+                                    var contentID = contentloop['id'];
+                                    String stringcontentID =
+                                        contentID.toString();
 
-                                  SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
 
-                                  var token = prefs.getString('api_token');
-                                  final url =
-                                      "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
+                                    var token = prefs.getString('api_token');
+                                    final url =
+                                        "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
 
-                                  setState(() {
-                                    _loading = true;
-                                  });
-                                  final doc = await PDFDocument.fromURL(url);
-                                  setState(() {
-                                    _doc = doc;
-                                    _loading = false;
-                                  });
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => _loading
-                                              ? Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                )
-                                              : PDFViewer(
-                                                  document: _doc,
-                                                  indicatorBackground:
-                                                      Colors.red,
-                                                  showPicker: true,
-                                                  showIndicator: true,
-                                                )));
+                                    setState(() {
+                                      _loading = true;
+                                    });
+                                    final doc = await PDFDocument.fromURL(url);
+                                    setState(() {
+                                      _doc = doc;
+                                      _loading = false;
+                                    });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => _loading
+                                                ? Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  )
+                                                : PDFViewer(
+                                                    document: _doc,
+                                                    indicatorBackground:
+                                                        Colors.red,
+                                                    showPicker: true,
+                                                    showIndicator: true,
+                                                  )));
+                                  }
                                 }
                               }
                             },
