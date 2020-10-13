@@ -72,9 +72,6 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
     prefs.setString("result", result.toString());
     if (result != null) {
       try {
-        // absolutefilePath = File(
-        //   result.files.single.path,
-        // );
         setState(() {
           file = result.files.first;
         });
@@ -151,8 +148,26 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(assgnmentD['name']),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.green[400],
+          flexibleSpace: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: Text(assgnmentD['name'],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                )))),
+                    SizedBox(height: 10),
+                    Text("Assignment Details",
+                        style:
+                            TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                  ])),
+          centerTitle: true,
         ),
         body: Container(
           color: Colors.grey[300],

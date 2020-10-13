@@ -7,13 +7,34 @@ import 'package:http/http.dart' as http;
 
 class Assignments extends StatelessWidget {
   final listasignmnts;
-  const Assignments({Key key, this.listasignmnts}) : super(key: key);
+  final String subname;
+  const Assignments({
+    Key key,
+    this.listasignmnts,
+    this.subname,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        title: new Text("My Assignments"),
+        flexibleSpace: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(subname,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )))),
+                  SizedBox(height: 10),
+                  Text("Subjects Assignments",
+                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                ])),
         centerTitle: true,
       ),
       body: ListView.builder(

@@ -1,30 +1,27 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart' as prefix0;
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-
 import 'package:globtorch/userScreens/courses/topicsview.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListTopicsContent extends StatefulWidget {
   @override
-  _ListTopicsContentState createState() => _ListTopicsContentState(
-        coursetopics: coursetopics,
-      );
+  _ListTopicsContentState createState() =>
+      _ListTopicsContentState(coursetopics: coursetopics, tpname: tpcname);
   final List coursetopics;
   final String title;
-  ListTopicsContent({this.coursetopics, this.title});
+  final String tpcname;
+  ListTopicsContent({this.coursetopics, this.title, this.tpcname});
 }
 
 class _ListTopicsContentState extends State<ListTopicsContent> {
   final List coursetopics;
-  _ListTopicsContentState({this.coursetopics});
+  final String tpname;
+  _ListTopicsContentState({this.coursetopics, this.tpname});
   bool visible = false;
   bool isLoading = true;
   String localPath;
@@ -34,7 +31,23 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        title: new Text("Courses Topics"),
+        flexibleSpace: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(tpname,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )))),
+                  SizedBox(height: 10),
+                  Text("Chapter Topics",
+                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                ])),
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -95,6 +108,8 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                       setState(() {
                                         visible = false;
                                       });
+                                      var tpccontentname =
+                                          coursetopics[index]['name'];
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -102,7 +117,9 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                                       null
                                                   ? TopicViw(
                                                       contentname:
-                                                          topicncontent)
+                                                          topicncontent,
+                                                      contentnaming:
+                                                          tpccontentname)
                                                   : Center(
                                                       child:
                                                           CircularProgressIndicator())));

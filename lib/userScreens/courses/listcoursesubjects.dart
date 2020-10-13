@@ -17,7 +17,23 @@ class ListSubjects extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        title: new Text("Courses Subjects"),
+        flexibleSpace: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(coursename,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )))),
+                  SizedBox(height: 10),
+                  Text("Course Subjects",
+                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                ])),
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -41,14 +57,17 @@ class ListSubjects extends StatelessWidget {
                                     new EdgeInsets.symmetric(horizontal: 50.0),
                                 child: FlatButton(
                                   onPressed: () {
+                                    var subjectname =
+                                        coursesubjects[index]['name'];
                                     List coursechap =
                                         coursesubjects[index]['chapters'];
+
                                     Navigator.of(context).push(
                                         new CupertinoPageRoute(
                                             builder: (BuildContext context) =>
                                                 new ListChapters(
-                                                  coursechapters: coursechap,
-                                                )));
+                                                    coursechapters: coursechap,
+                                                    subname: subjectname)));
                                   },
                                   child: const Text('View '),
                                   color: Colors.green,
@@ -82,6 +101,8 @@ class ListSubjects extends StatelessWidget {
 
                                         List listassignments =
                                             json["assignments"];
+                                        var subjectname =
+                                            coursesubjects[index]['name'];
                                         Navigator.push(
                                             (context),
                                             MaterialPageRoute(
@@ -89,7 +110,8 @@ class ListSubjects extends StatelessWidget {
                                                         context) =>
                                                     Assignments(
                                                         listasignmnts:
-                                                            listassignments)));
+                                                            listassignments,
+                                                        subname: subjectname)));
                                       },
                                       child: Text("Assignment"),
                                       color: Colors.green,

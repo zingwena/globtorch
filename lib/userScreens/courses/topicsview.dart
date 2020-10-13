@@ -6,18 +6,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TopicViw extends StatefulWidget {
   final Map<String, dynamic> contentname;
-
-  const TopicViw({Key key, this.contentname}) : super(key: key);
+  final String contentnaming;
+  const TopicViw({Key key, this.contentname, this.contentnaming})
+      : super(key: key);
   @override
-  _TopicViwState createState() => _TopicViwState(
-        contentname: contentname,
-      );
+  _TopicViwState createState() =>
+      _TopicViwState(contentname: contentname, content: contentnaming);
 }
 
 class _TopicViwState extends State<TopicViw> {
   final Map<String, dynamic> contentname;
 
-  _TopicViwState({this.contentname});
+  final String content;
+
+  _TopicViwState({this.contentname, this.content});
   PDFDocument _doc;
   bool _loading;
   @override
@@ -25,7 +27,23 @@ class _TopicViwState extends State<TopicViw> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        title: new Text("Topic Content"),
+        flexibleSpace: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(content,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )))),
+                  SizedBox(height: 10),
+                  Text("Topic Content",
+                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                ])),
         centerTitle: true,
       ),
       body: ListView.builder(

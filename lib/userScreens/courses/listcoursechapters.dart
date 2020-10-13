@@ -5,7 +5,8 @@ import 'package:globtorch/userScreens/courses/listcoursetopics.dart';
 
 class ListChapters extends StatelessWidget {
   final List coursechapters;
-  ListChapters({this.coursechapters});
+  final String subname;
+  ListChapters({this.coursechapters, this.subname});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,23 @@ class ListChapters extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        title: new Text("Courses Chapters"),
+        flexibleSpace: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(subname,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                              )))),
+                  SizedBox(height: 10),
+                  Text("Subject Chapters",
+                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                ])),
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -41,14 +58,16 @@ class ListChapters extends StatelessWidget {
                                     new EdgeInsets.symmetric(horizontal: 50.0),
                                 child: FlatButton(
                                   onPressed: () {
+                                    var topicname =
+                                        coursechapters[index]['name'];
                                     List coursetopics =
                                         coursechapters[index]['topics'];
                                     Navigator.of(context).push(
                                         new CupertinoPageRoute(
                                             builder: (BuildContext context) =>
                                                 new ListTopicsContent(
-                                                  coursetopics: coursetopics,
-                                                )));
+                                                    coursetopics: coursetopics,
+                                                    tpcname: topicname)));
                                   },
                                   child: const Text(
                                     'View Topics',
