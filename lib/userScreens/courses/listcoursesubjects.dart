@@ -99,15 +99,6 @@ class ListSubjects extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            onTap: () {
-                              List coursechap =
-                                  coursesubjects[index]['chapters'];
-                              Navigator.of(context).push(new CupertinoPageRoute(
-                                  builder: (BuildContext context) =>
-                                      new ListChapters(
-                                        coursechapters: coursechap,
-                                      )));
-                            },
                           ),
                         ),
                       )

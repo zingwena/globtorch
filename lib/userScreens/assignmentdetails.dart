@@ -22,15 +22,16 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
   var assgnmentD;
 
   _AssignmentDetailsState({this.assgnmentD});
-
   double progress = 0;
-  String _path = '';
   PlatformFile file;
-
   File absolutefilePath;
   Directory appDir;
-
   ReceivePort _receivePort = ReceivePort();
+  FilePickerResult result;
+  http.MultipartFile multipartFile;
+  SharedPreferences prefs;
+  var filename;
+  var resultString;
 
   static downloadingCallback(id, status, progress) {
     ///Looking up for a send port
@@ -61,11 +62,14 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
   }
 
   void _openFileExplorer() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    prefs = await SharedPreferences.getInstance();
+    // prefs.setString('email', convertedDatatoJson['data']['email']);
+
+    result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.any,
     );
-
+    prefs.setString("result", result.toString());
     if (result != null) {
       try {
         // absolutefilePath = File(
@@ -74,58 +78,34 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
         setState(() {
           file = result.files.first;
         });
+        prefs.setString("filename", file.name);
+        prefs.setString("filepath", file.path);
       } on PlatformException catch (e) {
         print("Unsupported operation" + e.toString());
       }
 
       if (!mounted) return;
-
-      setState(() {});
     }
   }
 
   Future _uploadFile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('api_token');
+    var filepath = prefs.getString('filepath');
     int idAss = assgnmentD['id'];
     final url =
         "https://globtorch.com/api/assignments/$idAss/answer/upload?api_token=$token";
-
-    /*final response = await http.post(url, headers: {
-      "Accept": "Application/json"
-    }, body: {
-      'file_upload': file.name,
-    });
-    print(file.name);
-    var convertedDatatoJson = jsonDecode(response.body);
-    print(convertedDatatoJson);
-*/
-    if (file.name == null) {
-      showDialog(
-        context: context,
-        child: new AlertDialog(
-          title: Text("No Assignment Selected"),
-          content: Text("Select an assignment"),
-          actions: [
-            new FlatButton(
-              child: const Text("Ok"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    } else {
+    if (result != null) {
       var postUri = Uri.parse(url);
-
       http.MultipartRequest request =
           new http.MultipartRequest("POST", postUri);
-      http.MultipartFile multipartFile =
-          await http.MultipartFile.fromPath('file_upload', file.path);
+      multipartFile =
+          await http.MultipartFile.fromPath('file_upload', filepath);
       request.files.add(multipartFile);
       http.StreamedResponse response = await request.send();
       print(response.statusCode);
-
       if (response.statusCode == 200) {
+        print(assgnmentD);
         showDialog(
           context: context,
           child: new AlertDialog(
@@ -140,12 +120,35 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
           ),
         );
       }
+    } else {
+      showDialog(
+        context: context,
+        child: new AlertDialog(
+          title: Text("Nothing to upload"),
+          content: Text("Pick Assignment first"),
+          actions: [
+            new FlatButton(
+              child: const Text("Ok"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   @override
+  void setState(fn) async {
+    super.setState(fn);
+    prefs = await SharedPreferences.getInstance();
+    filename = prefs.getString('filename');
+    resultString = prefs.getString('result');
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // print(assgnmentD);
+    //print(multipartFile);
+
     return Scaffold(
         appBar: AppBar(
           title: Text(assgnmentD['name']),
@@ -252,11 +255,17 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
               ),
               new Padding(
                   padding: const EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "file.name",
-                    textAlign: TextAlign.center,
-                    style: new TextStyle(fontWeight: FontWeight.bold),
-                  )),
+                  child: resultString != null
+                      ? Text(
+                          filename,
+                          textAlign: TextAlign.center,
+                          style: new TextStyle(fontWeight: FontWeight.bold),
+                        )
+                      : Text(
+                          "",
+                          textAlign: TextAlign.center,
+                          style: new TextStyle(fontWeight: FontWeight.bold),
+                        )),
               SizedBox(
                 height: 50.0,
               ),
@@ -269,9 +278,16 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
               ),
               RaisedButton.icon(
                 onPressed: () => _uploadFile(),
-                icon: Text('Upload and Assignement'),
+                icon: resultString != null
+                    ? Text('Update and Assignement')
+                    : Text('Upload and Assignement'),
                 label: Icon(Icons.upload_file),
                 color: Colors.green,
+              ),
+              Container(
+                child: Center(
+                  child: Text("data"),
+                ),
               ),
             ])),
           ),
