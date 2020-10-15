@@ -149,9 +149,9 @@ class ListSubjects extends StatelessWidget {
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 Discussions(
-                                                  subname: subjectname,
-                                                  discussionlist: disclist,
-                                                )));
+                                                    subname: subjectname,
+                                                    discussionlist: disclist,
+                                                    idsub: subId)));
                                   },
                                   autofocus: true,
                                   color: Colors.green,

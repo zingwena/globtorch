@@ -24,99 +24,6 @@ class _LogInState extends State<LogIn> {
   bool isLoading = true;
   String message;
 
-  Future signIn() async {
-    if (_formKey.currentState.validate()) {
-      String username = usernameController.text;
-      String password = passwordController.text;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      _formKey.currentState.save();
-      setState(() {
-        visible = true;
-        isLoading = true;
-      });
-      String url = 'https://globtorch.com/api/login';
-      final response = await http.post(url,
-          headers: {"Accept": "Application/json"},
-          body: {'school_id': username, 'password': password});
-      var convertedDatatoJson = jsonDecode(response.body);
-      //print(convertedDatatoJson);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        setState(() {
-          visible = false;
-        });
-        prefs.setString('email', convertedDatatoJson['data']['email']);
-        prefs.setString('name', convertedDatatoJson['data']['name']);
-        prefs.setString('surname', convertedDatatoJson['data']['surname']);
-        prefs.setString('api_token', convertedDatatoJson['data']['api_token']);
-
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (BuildContext context) => HomePage(
-                      name: convertedDatatoJson['data']['name'],
-                      surname: convertedDatatoJson['data']['surname'],
-                      email: convertedDatatoJson['data']['email'],
-                    )),
-            (Route<dynamic> route) => false);
-      } else if (response.statusCode == 400 || response.statusCode == 401) {
-        setState(() {
-          visible = false;
-        });
-        String mesg = convertedDatatoJson['message'].toString().trim();
-        String error = convertedDatatoJson['errors'].toString().trimLeft();
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: new Text(
-                '$mesg $error',
-                style: TextStyle(color: Colors.red),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) => LogIn()));
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-//  final snackBar = SnackBar(
-//             content: Text(body['message'].toString().trim()),
-//         );
-//         _scaffoldKey.currentState.showSnackBar(snackBar);
-//     }
-//     setState(() {
-//         loading = false;
-//     });
-// });
-      } else
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: new Text("Authentication Error"),
-              actions: <Widget>[
-                FlatButton(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LogIn()));
-                    //Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -381,5 +288,98 @@ class _LogInState extends State<LogIn> {
         context,
         MaterialPageRoute(
             builder: (context) => SignUpPage(), fullscreenDialog: true));
+  }
+
+  Future signIn() async {
+    if (_formKey.currentState.validate()) {
+      String username = usernameController.text;
+      String password = passwordController.text;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      _formKey.currentState.save();
+      setState(() {
+        visible = true;
+        isLoading = true;
+      });
+      String url = 'https://globtorch.com/api/login';
+      final response = await http.post(url,
+          headers: {"Accept": "Application/json"},
+          body: {'school_id': username, 'password': password});
+      var convertedDatatoJson = jsonDecode(response.body);
+      //print(convertedDatatoJson);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {
+          visible = false;
+        });
+        prefs.setString('email', convertedDatatoJson['data']['email']);
+        prefs.setString('name', convertedDatatoJson['data']['name']);
+        prefs.setString('surname', convertedDatatoJson['data']['surname']);
+        prefs.setString('api_token', convertedDatatoJson['data']['api_token']);
+
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => HomePage(
+                      name: convertedDatatoJson['data']['name'],
+                      surname: convertedDatatoJson['data']['surname'],
+                      email: convertedDatatoJson['data']['email'],
+                    )),
+            (Route<dynamic> route) => false);
+      } else if (response.statusCode == 400 || response.statusCode == 401) {
+        setState(() {
+          visible = false;
+        });
+        String mesg = convertedDatatoJson['message'].toString().trim();
+        String error = convertedDatatoJson['errors'].toString().trimLeft();
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: new Text(
+                '$mesg $error',
+                style: TextStyle(color: Colors.red),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: new Text("OK"),
+                  onPressed: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => LogIn()));
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+//  final snackBar = SnackBar(
+//             content: Text(body['message'].toString().trim()),
+//         );
+//         _scaffoldKey.currentState.showSnackBar(snackBar);
+//     }
+//     setState(() {
+//         loading = false;
+//     });
+// });
+      } else
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: new Text("Authentication Error"),
+              actions: <Widget>[
+                FlatButton(
+                  child: new Text("OK"),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LogIn()));
+                    //Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+    }
   }
 }

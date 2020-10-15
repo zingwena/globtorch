@@ -1,28 +1,38 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:globtorch/userScreens/createcomment.dart';
 
 class DiscussionDetails extends StatefulWidget {
   const DiscussionDetails(
-      {Key key, this.detaildiscussion, this.commentslist, this.sbname})
+      {Key key,
+      this.detaildiscussion,
+      this.commentslist,
+      this.sbname,
+      this.discussionId})
       : super(key: key);
   @override
   _DiscussionDetailsState createState() => _DiscussionDetailsState(
       discussiondetails: detaildiscussion,
       listcomentss: commentslist,
-      subjectname: sbname);
+      subjectname: sbname,
+      discId: discussionId);
   final Map<String, dynamic> detaildiscussion;
   final List commentslist;
   final String sbname;
+  final int discussionId;
 }
 
 class _DiscussionDetailsState extends State<DiscussionDetails> {
   final Map<String, dynamic> discussiondetails;
   final List listcomentss;
-
+  final int discId;
   final String subjectname;
   _DiscussionDetailsState(
-      {this.discussiondetails, this.listcomentss, this.subjectname});
+      {this.discussiondetails,
+      this.listcomentss,
+      this.subjectname,
+      this.discId});
 
   //
   //  = prefs.getString('api_token');
@@ -94,7 +104,7 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
                             child: ListTile(
                               leading: new CircleAvatar(
                                 child: new Icon(
-                                  Icons.person,
+                                  Icons.people,
                                   color: Colors.white,
                                   size: 20.0,
                                 ),
@@ -111,6 +121,24 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
                 );
               },
               shrinkWrap: true),
+          Padding(
+            padding: EdgeInsets.only(top: 15.0, left: 200.0, right: 10.0),
+            child: RaisedButton.icon(
+              onPressed: () async {
+                Navigator.push(
+                    (context),
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            CreateComment(discussionId: discId)));
+              },
+              textColor: Colors.green,
+              label: Icon(Icons.comment),
+              icon: Text("Comment"),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.green)),
+            ),
+          ),
         ],
       ),
     );
