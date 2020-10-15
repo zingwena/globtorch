@@ -40,7 +40,7 @@ class _LogInState extends State<LogIn> {
           headers: {"Accept": "Application/json"},
           body: {'school_id': username, 'password': password});
       var convertedDatatoJson = jsonDecode(response.body);
-      print(convertedDatatoJson);
+      //print(convertedDatatoJson);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {

@@ -4,39 +4,22 @@ import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/courses/listcoursesubjects.dart';
-import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 class ListCourses extends StatefulWidget {
+  const ListCourses({Key key, this.listcse}) : super(key: key);
+
   @override
-  _ListCoursesState createState() => _ListCoursesState();
+  _ListCoursesState createState() => _ListCoursesState(listcourses: listcse);
+  final List listcse;
 }
 
 class _ListCoursesState extends State<ListCourses> {
+  final List listcourses;
+
+  _ListCoursesState({this.listcourses});
   @override
-  void initState() {
-    super.initState();
-    fetchCourses();
-  }
-
-  List listcourses;
-  Future fetchCourses() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('api_token');
-    final url = "https://globtorch.com/api/users/courses?api_token=$token";
-    http.Response response =
-        await http.get(url, headers: {"Accept": "application/json"});
-    var json = jsonDecode(response.body);
-    // print(json);
-    setState(() {
-      listcourses = json;
-    });
-    // debugPrint(listcourses.toString());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +43,7 @@ class _ListCoursesState extends State<ListCourses> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     FadeAnimation(
-                      2,
+                      1,
                       Text(
                         "My Courses",
                         style: TextStyle(

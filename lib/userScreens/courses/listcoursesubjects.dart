@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/assignments.dart';
 import 'package:globtorch/userScreens/courses/listcoursechapters.dart';
+import 'package:globtorch/userScreens/discussions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -53,8 +54,7 @@ class ListSubjects extends StatelessWidget {
                               style: Style.headerTextStyle,
                             ),
                             subtitle: Container(
-                                padding:
-                                    new EdgeInsets.symmetric(horizontal: 50.0),
+                                width: 10.0,
                                 child: FlatButton(
                                   onPressed: () {
                                     var subjectname =
@@ -63,7 +63,7 @@ class ListSubjects extends StatelessWidget {
                                         coursesubjects[index]['chapters'];
 
                                     Navigator.of(context).push(
-                                        new CupertinoPageRoute(
+                                        new MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 new ListChapters(
                                                     coursechapters: coursechap,
@@ -79,7 +79,7 @@ class ListSubjects extends StatelessWidget {
                             dense: true,
                             trailing: Column(
                               children: <Widget>[
-                                Icon(Icons.assignment_ind),
+                                // Icon(Icons.assignment_ind),
                                 Expanded(
                                   child: FlatButton(
                                       onPressed: () async {
@@ -91,10 +91,10 @@ class ListSubjects extends StatelessWidget {
                                                 .getInstance();
                                         var token =
                                             prefs.getString('api_token');
-                                        final signUrl =
+                                        final asignUrl =
                                             "https://globtorch.com/api/subjects/$subjectIdString/assignments?api_token=$token";
                                         http.Response response = await http
-                                            .get(signUrl, headers: {
+                                            .get(asignUrl, headers: {
                                           "Accept": "application/json"
                                         });
                                         var json = jsonDecode(response.body);
@@ -113,14 +113,55 @@ class ListSubjects extends StatelessWidget {
                                                             listassignments,
                                                         subname: subjectname)));
                                       },
-                                      child: Text("Assignment"),
-                                      color: Colors.green,
-                                      shape: new RoundedRectangleBorder(
+                                      child: Text("Assignments"),
+                                      color: Colors.red,
+                                      shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              new BorderRadius.circular(30.0))),
+                                              BorderRadius.circular(10.0))),
                                 ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Expanded(
+                                    child: FlatButton(
+                                  child: Text("Discussions"),
+                                  onPressed: () async {
+                                    int subId = coursesubjects[index]['id'];
+                                    String subjectIdString = subId.toString();
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    var token = prefs.getString('api_token');
+                                    final disUrl =
+                                        "https://globtorch.com/api/subjects/$subjectIdString/discussions?api_token=$token";
+
+                                    http.Response response = await http
+                                        .get(disUrl, headers: {
+                                      "Accept": "application/json"
+                                    });
+                                    var json = jsonDecode(response.body);
+
+                                    List disclist = json;
+                                    //print(disclist);
+                                    var subjectname =
+                                        coursesubjects[index]['name'];
+                                    Navigator.push(
+                                        (context),
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                Discussions(
+                                                  subname: subjectname,
+                                                  discussionlist: disclist,
+                                                )));
+                                  },
+                                  autofocus: true,
+                                  color: Colors.green,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                ))
                               ],
                             ),
+                            isThreeLine: true,
                           ),
                         ),
                       )

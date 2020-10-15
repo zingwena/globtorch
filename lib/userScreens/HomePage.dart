@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
@@ -326,9 +329,20 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: new Text("My Courses"),
-                onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new ListCourses()));
+                onTap: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  final url =
+                      "https://globtorch.com/api/users/courses?api_token=$token";
+                  http.Response response = await http
+                      .get(url, headers: {"Accept": "application/json"});
+                  var json = jsonDecode(response.body);
+                  List courselist = json;
+
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          new ListCourses(listcse: courselist)));
                 },
               ),
               new ListTile(
