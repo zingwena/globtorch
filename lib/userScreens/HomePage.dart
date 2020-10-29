@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: GestureDetector(
-          child: new Text(
+          child: Text(
             "Globtorch",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -48,25 +48,25 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.blue[900],
         centerTitle: false,
         actions: <Widget>[
-          new Stack(
+          Stack(
             alignment: Alignment.topLeft,
             children: <Widget>[
-              new IconButton(
-                  icon: new Icon(
+              IconButton(
+                  icon: Icon(
                     Icons.notifications,
                     color: Colors.white,
-                    size: 25,
+                    size: 30,
                   ),
                   onPressed: () {
-                    // Navigator.of(context).push(new CupertinoPageRoute(
-                    //     builder: (BuildContext context) => new Notification()));
+                    // Navigator.of(context).push( CupertinoPageRoute(
+                    //     builder: (BuildContext context) =>  Notification()));
                   }),
-              new CircleAvatar(
+              CircleAvatar(
                 radius: 8.0,
                 backgroundColor: Colors.red,
-                child: new Text(
+                child: Text(
                   "0",
-                  style: new TextStyle(color: Colors.white, fontSize: 12.0),
+                  style: TextStyle(color: Colors.white, fontSize: 12.0),
                 ),
               )
             ],
@@ -108,10 +108,10 @@ class _HomePageState extends State<HomePage> {
               height: 10.0,
             ),
             Container(
-              child: new Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  new GestureDetector(
+                  GestureDetector(
                     onTap: () {},
                     child: Container(
                       height: 150,
@@ -122,9 +122,9 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new Icon(Icons.library_books,
+                            Icon(Icons.library_books,
                                 color: Colors.purple, size: 70.0),
-                            new Text(
+                            Text(
                               "Courses",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  new GestureDetector(
+                  GestureDetector(
                     onTap: () {},
                     child: Container(
                       height: 150,
@@ -146,12 +146,12 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new Icon(
+                            Icon(
                               Icons.assignment,
                               color: Colors.lightBlue,
                               size: 70.0,
                             ),
-                            new Text(
+                            Text(
                               "Discussions",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -165,14 +165,14 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            new SizedBox(
+            SizedBox(
               height: 20.0,
             ),
             //second Row
-            new Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                new GestureDetector(
+                GestureDetector(
                   onTap: () {},
                   child: Container(
                     height: 150,
@@ -183,9 +183,8 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(Icons.report,
-                              color: Colors.green, size: 70.0),
-                          new Text(
+                          Icon(Icons.report, color: Colors.green, size: 70.0),
+                          Text(
                             "Reports",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -196,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                new GestureDetector(
+                GestureDetector(
                   onTap: () {},
                   child: Container(
                     height: 150,
@@ -207,9 +206,9 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(Icons.library_add,
+                          Icon(Icons.library_add,
                               color: Colors.green, size: 70.0),
-                          new Text(
+                          Text(
                             "Library",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -223,10 +222,10 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             //third Row
-            new Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                new GestureDetector(
+                GestureDetector(
                   onTap: () {},
                   child: Container(
                     height: 150,
@@ -237,9 +236,9 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(Icons.recent_actors,
+                          Icon(Icons.recent_actors,
                               color: Colors.red, size: 70.0),
-                          new Text(
+                          Text(
                             "Student Guide",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, color: Colors.red),
@@ -249,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                new GestureDetector(
+                GestureDetector(
                   onTap: () {},
                   child: Container(
                     height: 150,
@@ -260,9 +259,8 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(Icons.chat,
-                              color: Colors.blue[800], size: 70.0),
-                          new Text(
+                          Icon(Icons.chat, color: Colors.blue[800], size: 70.0),
+                          Text(
                             "Chart",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -278,33 +276,33 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      drawer: new Drawer(
+      drawer: Drawer(
         child: SingleChildScrollView(
-          child: new Column(
+          child: Column(
             children: <Widget>[
               UserAccountsDrawerHeader(
-                accountName: new Text(
+                accountName: Text(
                   '$name $surname',
                   style: Style.titleTextStyle,
                 ),
-                accountEmail: new Text(
+                accountEmail: Text(
                   "$email",
                   style: Style.baseTextStyle,
                 ),
-                currentAccountPicture: new CircleAvatar(
+                currentAccountPicture: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: new Icon(Icons.person),
+                  child: Icon(Icons.person),
                 ),
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.home,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Home"),
+                title: Text("Home"),
                 onTap: () async {
                   WidgetsFlutterBinding.ensureInitialized();
                   SharedPreferences prefs =
@@ -312,23 +310,23 @@ class _HomePageState extends State<HomePage> {
                   var emaill = prefs.getString('email');
                   var namee = prefs.getString('name');
                   var surnamee = prefs.getString('surname');
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new HomePage(
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (BuildContext context) => HomePage(
                             name: namee,
                             surname: surnamee,
                             email: emaill,
                           )));
                 },
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.library_books,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("My Courses"),
+                title: Text("My Courses"),
                 onTap: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
@@ -340,114 +338,114 @@ class _HomePageState extends State<HomePage> {
                   var json = jsonDecode(response.body);
                   List courselist = json;
 
-                  Navigator.of(context).push(new MaterialPageRoute(
+                  Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          new ListCourses(listcse: courselist)));
+                          ListCourses(listcse: courselist)));
                 },
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.assessment,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("My Teachers"),
+                title: Text("My Teachers"),
                 onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new MyTeachers()));
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (BuildContext context) => MyTeachers()));
                 },
               ),
-              /* new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              /*  ListTile(
+                leading:  CircleAvatar(
+                  child:  Icon(
                     Icons.timer,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Assignments"),
+                title:  Text("Assignments"),
                 onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new Assignments()));
+                  Navigator.of(context).push( CupertinoPageRoute(
+                      builder: (BuildContext context) =>  Assignments()));
                 },
               ),*/
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.group_work,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Discussions"),
+                title: Text("Discussions"),
                 onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new Discussions()));
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (BuildContext context) => Discussions()));
                 },
               ),
-              // new Divider(),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              //  Divider(),
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.report,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Report"),
+                title: Text("Report"),
                 onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new Reports()));
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (BuildContext context) => Reports()));
                 },
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.message,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Feedback"),
+                title: Text("Feedback"),
                 onTap: () {},
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.library_books,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Library"),
+                title: Text("Library"),
                 onTap: () {
-                  Navigator.of(context).push(new CupertinoPageRoute(
-                      builder: (BuildContext context) => new Library()));
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (BuildContext context) => Library()));
                 },
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.attach_money,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Invite and Earn"),
+                title: Text("Invite and Earn"),
                 onTap: () {},
               ),
 
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.web,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("External Resources"),
+                title: Text("External Resources"),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -455,37 +453,37 @@ class _HomePageState extends State<HomePage> {
                           builder: (BuildContext context) => ExtResources()));
                 },
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.chat,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Chart"),
+                title: Text("Chart"),
                 onTap: () {},
               ),
-              new ListTile(
-                leading: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                leading: CircleAvatar(
+                  child: Icon(
                     Icons.book,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text("Student Guide"),
+                title: Text("Student Guide"),
                 onTap: () {},
               ),
-              new ListTile(
-                trailing: new CircleAvatar(
-                  child: new Icon(
+              ListTile(
+                trailing: CircleAvatar(
+                  child: Icon(
                     Icons.exit_to_app,
                     color: Colors.white,
                     size: 20.0,
                   ),
                 ),
-                title: new Text(
+                title: Text(
                   "Logout",
                   style: TextStyle(fontStyle: FontStyle.italic),
                 ),
