@@ -42,10 +42,10 @@ class ListSubjects extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Container(
               child: Column(
-                children: <Widget>[
+                children: [
                   Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
+                    children: [
                       SingleChildScrollView(
                         child: Card(
                           child: ListTile(

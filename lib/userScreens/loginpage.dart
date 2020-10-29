@@ -307,7 +307,15 @@ class _LogInState extends State<LogIn> {
           body: {'school_id': username, 'password': password});
       var convertedDatatoJson = jsonDecode(response.body);
       //print(convertedDatatoJson);
-
+      var token = convertedDatatoJson['api_token'];
+      final urlnot =
+          "https://www.globtorch.com/api/notifications?api_token=$token";
+      http.Response responsenot =
+          await http.get(urlnot, headers: {"Accept": "application/json"});
+      var json = jsonDecode(responsenot.body);
+      print(json);
+      var notIn = json['num_unread_notifications'];
+      var notifinumber = notIn.toString();
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
           visible = false;
@@ -323,6 +331,7 @@ class _LogInState extends State<LogIn> {
                       name: convertedDatatoJson['data']['name'],
                       surname: convertedDatatoJson['data']['surname'],
                       email: convertedDatatoJson['data']['email'],
+                      notific: notifinumber,
                     )),
             (Route<dynamic> route) => false);
       } else if (response.statusCode == 400 || response.statusCode == 401) {

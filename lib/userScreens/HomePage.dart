@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';
+import 'package:globtorch/userScreens/notification.dart';
 import 'package:globtorch/userScreens/reports.dart';
 import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';
@@ -17,13 +17,14 @@ import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() =>
-      _HomePageState(email: email, name: name, surname: surname);
+  _HomePageState createState() => _HomePageState(
+      email: email, name: name, surname: surname, notificnumber: notific);
 
   final String name;
   final String surname;
   final String email;
-  HomePage({this.name, this.surname, this.email});
+  final String notific;
+  HomePage({this.name, this.surname, this.email, this.notific});
 }
 
 class _HomePageState extends State<HomePage> {
@@ -31,11 +32,13 @@ class _HomePageState extends State<HomePage> {
   final String surname;
   final String email;
   int _page = 0;
-  _HomePageState({this.name, this.surname, this.email});
+  String notificnumber;
+  _HomePageState({this.name, this.surname, this.email, this.notificnumber});
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-        .copyWith(statusBarColor: Colors.transparent));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
+    //     .copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -57,18 +60,33 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.white,
                     size: 30,
                   ),
-                  onPressed: () {
-                    // Navigator.of(context).push( CupertinoPageRoute(
-                    //     builder: (BuildContext context) =>  Notification()));
+                  onPressed: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+                    final url =
+                        "https://www.globtorch.com/api/notifications?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (BuildContext context) => Notifications(
+                              not: json['notifications'],
+                            )));
                   }),
-              CircleAvatar(
-                radius: 8.0,
-                backgroundColor: Colors.red,
-                child: Text(
-                  "0",
-                  style: TextStyle(color: Colors.white, fontSize: 12.0),
-                ),
-              )
+              Container(
+                  child: notificnumber != null
+                      ? CircleAvatar(
+                          radius: 8.0,
+                          backgroundColor: Colors.red,
+                          child: Text(
+                            notificnumber,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 15.0),
+                          ),
+                        )
+                      : Text(""))
             ],
           ),
         ],
@@ -395,7 +413,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("Report"),
-                onTap: () {
+                onTap: () async {
                   Navigator.of(context).push(CupertinoPageRoute(
                       builder: (BuildContext context) => Reports()));
                 },
