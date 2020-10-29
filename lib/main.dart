@@ -1,16 +1,32 @@
 import 'dart:async';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/userScreens/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 import 'userScreens/welcomePage.dart';
+
+//this is the name given to the background fetch
+const simplePeriodicTask = "simplePeriodicTask";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(
     debug: true,
   );
+  await Workmanager.initialize(callbackDispatcher,
+      isInDebugMode:
+          true); //to true if still in testing lev turn it to false whenever you are launching the app
+  await Workmanager.registerPeriodicTask("5", simplePeriodicTask,
+      existingWorkPolicy: ExistingWorkPolicy.replace,
+      frequency: Duration(minutes: 15), //when should it check the link
+      initialDelay:
+          Duration(seconds: 5), //duration before showing the notification
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ));
   runApp(
     MaterialApp(
       title: 'Globtorch Mobile',
@@ -21,6 +37,21 @@ Future<void> main() async {
       debugShowCheckedModeBanner: false,
     ),
   );
+}
+
+void callbackDispatcher() {
+  Workmanager.executeTask((task, inputData) async {
+    FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
+    var android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOS = IOSInitializationSettings();
+    var initSetttings = InitializationSettings(android: android, iOS: iOS);
+    flp.initialize(initSetttings);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("MY FLP IS ${flp.toString()}");
+    prefs.setString('flp', flp.toString());
+
+    return Future.value(true);
+  });
 }
 
 class SplashScreen extends StatefulWidget {
