@@ -1,21 +1,26 @@
-import 'dart:async';
-import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/userScreens/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'userScreens/welcomePage.dart';
+import 'package:http/http.dart' as http;
 
 //this is the name given to the background fetch
 const simplePeriodicTask = "simplePeriodicTask";
 
+// flutter local notification setup
+HomePage homePage;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(
     debug: true,
   );
+  WidgetsFlutterBinding.ensureInitialized();
   await Workmanager.initialize(callbackDispatcher,
       isInDebugMode:
           true); //to true if still in testing lev turn it to false whenever you are launching the app
@@ -27,6 +32,7 @@ Future<void> main() async {
       constraints: Constraints(
         networkType: NetworkType.connected,
       ));
+
   runApp(
     MaterialApp(
       title: 'Globtorch Mobile',
@@ -39,7 +45,17 @@ Future<void> main() async {
   );
 }
 
-void callbackDispatcher() {
+void showNotification(v, flp) async {
+  var android = AndroidNotificationDetails(
+      'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+      priority: Priority.high, importance: Importance.max);
+  var iOS = IOSNotificationDetails();
+  var platform = NotificationDetails(android: android, iOS: iOS);
+  await flp.show(0, 'Virtual intelligent solution', '$v', platform,
+      payload: 'VIS \n $v');
+}
+
+Future callbackDispatcher() {
   Workmanager.executeTask((task, inputData) async {
     FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
     var android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -47,8 +63,21 @@ void callbackDispatcher() {
     var initSetttings = InitializationSettings(android: android, iOS: iOS);
     flp.initialize(initSetttings);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("MY FLP IS ${flp.toString()}");
-    prefs.setString('flp', flp.toString());
+    var token = prefs.getString('api_token');
+    if (token != null) {
+      var response = await http
+          .get('https://www.globtorch.com/api/notifications?api_token=$token');
+      print("here================");
+      print(response);
+      var convert = json.decode(response.body);
+      if (convert['status'] == 200) {
+        showNotification(convert['title'], flp);
+      } else {
+        print("no messgae");
+      }
+    } else {
+      print("no token");
+    }
 
     return Future.value(true);
   });

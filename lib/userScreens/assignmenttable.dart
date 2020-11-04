@@ -150,26 +150,30 @@ class _AssignmentListState extends State<AssignmentList> {
   Widget build(BuildContext context) {
     print(assgnmentD);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        flexibleSpace: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(assgnmentD['name'],
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              )))),
-                  SizedBox(height: 10),
-                  Text("Assignment Details",
-                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
-                ])),
-        centerTitle: true,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBar(
+          backgroundColor: Colors.green[400],
+          flexibleSpace: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: Text(assgnmentD['name'],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                )))),
+                    SizedBox(height: 1),
+                    Text("Assignment Details",
+                        style:
+                            TextStyle(color: Color(0xff59595a), fontSize: 15)),
+                  ])),
+          centerTitle: true,
+        ),
       ),
       body: Container(
         margin: const EdgeInsets.only(top: 20.0),

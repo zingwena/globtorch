@@ -88,7 +88,7 @@ class Assignments extends StatelessWidget {
                                 urlAssignment,
                                 headers: {"Accept": "application/json"});
                             var json = jsonDecode(response.body);
-                            final assgnmentJson = json;
+                            var assgnmentJson = json;
                             //print(assgnmentJson['name']);
                             Navigator.push(
                                 context,

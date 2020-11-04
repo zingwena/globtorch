@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussions.dart';
@@ -14,17 +14,60 @@ import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:workmanager/workmanager.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState(
       email: email, name: name, surname: surname, notificnumber: notific);
-
   final String name;
   final String surname;
   final String email;
   final String notific;
-  HomePage({this.name, this.surname, this.email, this.notific});
+  HomePage({
+    this.name,
+    this.surname,
+    this.email,
+    this.notific,
+  });
+
+  void showNotification(v, flp) async {
+    var android = AndroidNotificationDetails(
+        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+        priority: Priority.high, importance: Importance.max);
+    var iOS = IOSNotificationDetails();
+    var platform = NotificationDetails(android: android, iOS: iOS);
+    await flp.show(0, 'Virtual intelligent solution', '$v', platform,
+        payload: 'VIS \n $v');
+  }
+
+  Future callbackDispatcher() {
+    Workmanager.executeTask((task, inputData) async {
+      FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
+      var android = AndroidInitializationSettings('@mipmap/ic_launcher');
+      var iOS = IOSInitializationSettings();
+      var initSetttings = InitializationSettings(android: android, iOS: iOS);
+      flp.initialize(initSetttings);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('api_token');
+      if (token != null) {
+        var response = await http.get(
+            'https://www.globtorch.com/api/notifications?api_token=$token');
+        print("here================");
+        print(response);
+        var convert = json.decode(response.body);
+        if (convert['status'] == 200) {
+          showNotification(convert['title'], flp);
+        } else {
+          print("no messgae");
+        }
+      } else {
+        print("no token");
+      }
+
+      return Future.value(true);
+    });
+  }
 }
 
 class _HomePageState extends State<HomePage> {

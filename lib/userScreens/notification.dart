@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:globtorch/userScreens/assignmenttable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Notifications extends StatefulWidget {
   const Notifications({this.not});
@@ -21,7 +26,7 @@ class _NotificationsState extends State<Notifications> {
       body: ListView.builder(
         itemCount: notific == null ? 0 : notific.length,
         itemBuilder: (BuildContext context, int index) {
-          print(notific);
+          //print(notific);
           return Container(
             child: Column(
               children: [
@@ -32,6 +37,32 @@ class _NotificationsState extends State<Notifications> {
                       child: Card(
                         child: ListTile(
                           title: Text(notific[index]['title']),
+                          onTap: () async {
+                            var navtonotidetails = notific[index]['link'];
+                            List<String> strings = navtonotidetails.split("/");
+                            var lastindex = strings[strings.length - 1];
+                            if (strings.contains("viewassign")) {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              var token = prefs.getString('api_token');
+                              final urlAssignment =
+                                  "https://globtorch.com/api/assignments/$lastindex?api_token=$token";
+                              http.Response response = await http.get(
+                                  urlAssignment,
+                                  headers: {"Accept": "application/json"});
+                              var json = jsonDecode(response.body);
+                              var assgnmentJson = json;
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          AssignmentList(
+                                            assignmentdetails: assgnmentJson,
+                                          )));
+                            } else {
+                              print("not");
+                            }
+                          },
                         ),
                       ),
                     )
