@@ -39,27 +39,30 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        flexibleSpace: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(subjectname,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              )))),
-                  SizedBox(height: 10),
-                  Text("Discussion Details",
-                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
-                ])),
-        centerTitle: true,
-      ),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: AppBar(
+            backgroundColor: Colors.green[400],
+            flexibleSpace: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: Text(subjectname,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  )))),
+                      SizedBox(height: 10),
+                      Text("Discussion Details",
+                          style: TextStyle(
+                              color: Color(0xff59595a), fontSize: 15)),
+                    ])),
+            centerTitle: true,
+          )),
       body: Column(
         children: [
           Row(

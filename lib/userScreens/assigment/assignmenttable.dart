@@ -26,7 +26,7 @@ class _AssignmentListState extends State<AssignmentList> {
   final assgnmentD;
 
   _AssignmentListState({this.assgnmentD});
-  double progress = 0;
+  int progress = 0;
   PlatformFile file;
   File absolutefilePath;
   Directory appDir;
@@ -54,13 +54,13 @@ class _AssignmentListState extends State<AssignmentList> {
         _receivePort.sendPort, "downloading");
 
     ///Listening for the data is comming other isolataes
-    _receivePort.listen((message) {
-      setState(() {
-        progress = message[2];
-      });
+    // _receivePort.listen((message) {
+    //   setState(() {
+    //     progress = message[2];
+    //   });
 
-      //print(progress);
-    });
+    //   //print(progress);
+    // });
 
     FlutterDownloader.registerCallback(downloadingCallback);
   }
@@ -148,7 +148,7 @@ class _AssignmentListState extends State<AssignmentList> {
 
   @override
   Widget build(BuildContext context) {
-    print(assgnmentD);
+    //print(assgnmentD);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(100),

@@ -1,21 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/userScreens/assignmenttable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
-// flutter local notification setup
-void showNotification(v, flp) async {
-  var android = AndroidNotificationDetails(
-      'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-      priority: Priority.high, importance: Importance.max);
-  var iOS = IOSNotificationDetails();
-  var platform = NotificationDetails(android: android, iOS: iOS);
-  await flp.show(0, 'Virtual intelligent solution', '$v', platform,
-      payload: 'VIS \n $v');
-}
 
 class Assignments extends StatelessWidget {
   final listasignmnts;

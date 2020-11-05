@@ -179,7 +179,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
                 label: Icon(Icons.navigate_next),
                 icon: Text("Send"),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
+                    borderRadius: BorderRadius.circular(10.0),
                     side: BorderSide(color: Colors.green)),
               ),
             ),

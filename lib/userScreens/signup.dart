@@ -684,6 +684,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                         String pwd = passwordControlller.text;
                                         String referral =
                                             referralController.text;
+                                        _formKey.currentState.save();
+
                                         // Showing CircularProgressIndicator using State.
                                         showDialog(
                                           context: context,
@@ -742,8 +744,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                             });
                                         var convertedDatatoJson =
                                             jsonDecode(response.body);
-                                        print(convertedDatatoJson);
-                                        print(response.statusCode);
+                                        //print(convertedDatatoJson);
+                                        //print(response.statusCode);
 
                                         if (response.statusCode == 422) {
                                           setState(() {
@@ -778,10 +780,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               );
                                             },
                                           );
-                                        }
-
-                                        // If Web call Success then Hide the CircularProgressIndicator.
-                                        else if (response.statusCode == 200) {
+                                        } else if (response.statusCode == 200) {
                                           String schoolId =
                                               convertedDatatoJson['data']
                                                   ['school_id'];

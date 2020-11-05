@@ -25,27 +25,30 @@ class _TopicViwState extends State<TopicViw> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        flexibleSpace: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(content,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              )))),
-                  SizedBox(height: 10),
-                  Text("Topic Content",
-                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
-                ])),
-        centerTitle: true,
-      ),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: AppBar(
+            backgroundColor: Colors.green[400],
+            flexibleSpace: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: Text(content,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  )))),
+                      SizedBox(height: 10),
+                      Text("Topic Content",
+                          style: TextStyle(
+                              color: Color(0xff59595a), fontSize: 15)),
+                    ])),
+            centerTitle: true,
+          )),
       body: ListView.builder(
           itemCount: contentname == null ? 0 : contentname.length,
           itemBuilder: (BuildContext context, int index) {
@@ -78,6 +81,7 @@ class _TopicViwState extends State<TopicViw> {
                                 borderRadius: new BorderRadius.circular(50.0)),
                             onPressed: () async {
                               final status = await Permission.storage.request();
+
                               if (status.isGranted) {
                                 for (var contentloop in contentname['topic']
                                     ['contents']) {

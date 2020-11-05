@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/userScreens/creatediscussion.dart';
 import 'package:globtorch/userScreens/discussiondetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,47 +24,33 @@ class _DiscussionsState extends State<Discussions> {
   final int subId;
   _DiscussionsState({this.subjctnamedis, this.listdiscussion, this.subId});
 
-  // flutter local notification setup
-  void showNotification(v, flp) async {
-    var android = AndroidNotificationDetails(
-        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-        priority: Priority.high, importance: Importance.max);
-    var iOS = IOSNotificationDetails();
-    var platform = NotificationDetails(android: android, iOS: iOS);
-    await flp.show(0, 'Virtual intelligent solution', '$v', platform,
-        payload: 'VIS \n $v');
-  }
-
-  Future<void> callbackDispatcher() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var email = prefs.getString('flp');
-    showNotification(listdiscussion, email);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        flexibleSpace: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(subjctnamedis,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              )))),
-                  SizedBox(height: 10),
-                  Text("Discussions",
-                      style: TextStyle(color: Color(0xff59595a), fontSize: 15)),
-                ])),
-        centerTitle: true,
-      ),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: AppBar(
+            backgroundColor: Colors.green[400],
+            flexibleSpace: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: Text(subjctnamedis,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  )))),
+                      SizedBox(height: 10),
+                      Text("Discussions",
+                          style: TextStyle(
+                              color: Color(0xff59595a), fontSize: 15)),
+                    ])),
+            centerTitle: true,
+          )),
       body: ListView.builder(
         itemCount: listdiscussion == null ? 0 : listdiscussion.length,
         itemBuilder: (BuildContext context, int index) {

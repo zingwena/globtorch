@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/assignmenttable.dart';
+import 'package:globtorch/userScreens/assigment/assignmenttable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,7 +26,7 @@ class _NotificationsState extends State<Notifications> {
       body: ListView.builder(
         itemCount: notific == null ? 0 : notific.length,
         itemBuilder: (BuildContext context, int index) {
-          //print(notific);
+          print(notific);
           return Container(
             child: Column(
               children: [
@@ -51,6 +51,7 @@ class _NotificationsState extends State<Notifications> {
                                   urlAssignment,
                                   headers: {"Accept": "application/json"});
                               var json = jsonDecode(response.body);
+                              //print(json);
                               var assgnmentJson = json;
                               Navigator.push(
                                   context,
