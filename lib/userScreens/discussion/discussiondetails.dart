@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/createcomment.dart';
+import 'package:globtorch/userScreens/discussion/createcomment.dart';
 
 class DiscussionDetails extends StatefulWidget {
   const DiscussionDetails(

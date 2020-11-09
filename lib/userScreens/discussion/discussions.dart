@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/creatediscussion.dart';
-import 'package:globtorch/userScreens/discussiondetails.dart';
+import 'package:globtorch/userScreens/discussion/creatediscussion.dart';
+import 'package:globtorch/userScreens/discussion/discussiondetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 

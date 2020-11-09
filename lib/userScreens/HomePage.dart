@@ -4,8 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/tools/style.dart';
+import 'package:globtorch/userScreens/chat/chathomepage.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
-import 'package:globtorch/userScreens/discussions.dart';
+import 'package:globtorch/userScreens/discussion/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';
 import 'package:globtorch/userScreens/notification.dart';
 import 'package:globtorch/userScreens/reports.dart';
@@ -76,6 +77,7 @@ class _HomePageState extends State<HomePage> {
   final String email;
   int _page = 0;
   String notificnumber;
+
   _HomePageState({this.name, this.surname, this.email, this.notificnumber});
 
   @override
@@ -418,20 +420,7 @@ class _HomePageState extends State<HomePage> {
                       builder: (BuildContext context) => MyTeachers()));
                 },
               ),
-              /*  ListTile(
-                leading:  CircleAvatar(
-                  child:  Icon(
-                    Icons.timer,
-                    color: Colors.white,
-                    size: 20.0,
-                  ),
-                ),
-                title:  Text("Assignments"),
-                onTap: () {
-                  Navigator.of(context).push( CupertinoPageRoute(
-                      builder: (BuildContext context) =>  Assignments()));
-                },
-              ),*/
+
               ListTile(
                 leading: CircleAvatar(
                   child: Icon(
@@ -523,7 +512,23 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("Chart"),
-                onTap: () {},
+                onTap: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  final discdetailUrl =
+                      "https://globtorch.com/api/chat_room?api_token=$token";
+                  http.Response response = await http.get(discdetailUrl,
+                      headers: {"Accept": "application/json"});
+                  var json = jsonDecode(response.body);
+                  var chatroom = json['chatRooms'];
+                  print(json);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ChatHomepage(chatroomlist: chatroom)));
+                },
               ),
               ListTile(
                 leading: CircleAvatar(

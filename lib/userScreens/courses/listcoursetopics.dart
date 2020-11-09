@@ -113,6 +113,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                       });
                                       var tpccontentname =
                                           coursetopics[index]['name'];
+                                      //print(topicncontent);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(

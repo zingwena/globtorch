@@ -15,7 +15,6 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   final List notific;
-
   _NotificationsState({this.notific});
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,8 @@ class _NotificationsState extends State<Notifications> {
                         child: ListTile(
                           title: Text(notific[index]['title']),
                           onTap: () async {
-                            var navtonotidetails = notific[index]['link'];
+                            var navtonotidetails =
+                                notific[index]['link'].toString();
                             List<String> strings = navtonotidetails.split("/");
                             var lastindex = strings[strings.length - 1];
                             if (strings.contains("viewassign")) {

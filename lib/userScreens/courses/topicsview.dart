@@ -83,6 +83,7 @@ class _TopicViwState extends State<TopicViw> {
                               final status = await Permission.storage.request();
 
                               if (status.isGranted) {
+                                //print(contentname['topic']);
                                 for (var contentloop in contentname['topic']
                                     ['contents']) {
                                   if (contentloop['type'] == 'pdf') {

@@ -1,14 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/userScreens/HomePage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'userScreens/welcomePage.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 //this is the name given to the background fetch
 const simplePeriodicTask = "simplePeriodicTask";
@@ -152,16 +152,6 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ),
                     ),
-
-                    // Shimmer.fromColors(
-                    //   period: Duration(milliseconds: 1500),
-                    //   baseColor: Colors.white,
-                    //   highlightColor: Colors.grey,
-                    //   child: Container(),
-                    // ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(top: 20.0),
-                    // ),
                   ],
                 ),
               ),

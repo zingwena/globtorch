@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/assignmenttable.dart';
+import 'package:globtorch/userScreens/assigment/assignmenttable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
