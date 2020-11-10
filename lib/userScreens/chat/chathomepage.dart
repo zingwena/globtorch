@@ -1,157 +1,146 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/chat/chatpage.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_action_btn.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_chat_item.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_page_header.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_page_wrapper.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_profile_image.dart';
-import 'package:globtorch/userScreens/chat/flat_widgets/flat_section_header.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-class ChatHomepage extends StatefulWidget {
-  const ChatHomepage({this.chatroomlist});
-
+class Chat extends StatefulWidget {
   @override
-  _ChatHomepageState createState() =>
-      _ChatHomepageState(listchatroom: chatroomlist);
-  final chatroomlist;
+  State createState() => ChatWindow();
 }
 
-class _ChatHomepageState extends State<ChatHomepage> {
-  final listchatroom;
+class ChatWindow extends State<Chat> with TickerProviderStateMixin {
+  final List<Msg> _messages = <Msg>[];
+  final TextEditingController _textController = TextEditingController();
+  bool _isWriting = false;
 
-  _ChatHomepageState({this.listchatroom});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return Scaffold(
-      body: ListView.builder(
-          itemCount: listchatroom == null ? 0 : listchatroom.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
+      appBar: AppBar(
+        title: Text("Chat Application"),
+        elevation: Theme.of(ctx).platform == TargetPlatform.iOS ? 0.0 : 6.0,
+      ),
+      body: Column(children: <Widget>[
+        Flexible(
+            child: ListView.builder(
+          itemBuilder: (_, int index) => _messages[index],
+          itemCount: _messages.length,
+          reverse: true,
+          padding: EdgeInsets.all(6.0),
+        )),
+        Divider(height: 1.0),
+        Container(
+          child: _buildComposer(),
+          decoration: BoxDecoration(color: Theme.of(ctx).cardColor),
+        ),
+      ]),
+    );
+  }
+
+  Widget _buildComposer() {
+    return IconTheme(
+      data: IconThemeData(color: Theme.of(context).accentColor),
+      child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 9.0),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: TextField(
+                  controller: _textController,
+                  onChanged: (String txt) {
+                    setState(() {
+                      _isWriting = txt.length > 0;
+                    });
+                  },
+                  onSubmitted: _submitMsg,
+                  decoration: InputDecoration.collapsed(
+                      hintText: "Enter some text to send a message"),
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.symmetric(horizontal: 3.0),
+                  child: Theme.of(context).platform == TargetPlatform.iOS
+                      ? CupertinoButton(
+                          child: Text("Submit"),
+                          onPressed: _isWriting
+                              ? () => _submitMsg(_textController.text)
+                              : null)
+                      : IconButton(
+                          icon: Icon(Icons.message),
+                          onPressed: _isWriting
+                              ? () => _submitMsg(_textController.text)
+                              : null,
+                        )),
+            ],
+          ),
+          decoration: Theme.of(context).platform == TargetPlatform.iOS
+              ? BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.brown)))
+              : null),
+    );
+  }
+
+  void _submitMsg(String txt) {
+    _textController.clear();
+    setState(() {
+      _isWriting = false;
+    });
+    Msg msg = Msg(
+      txt: txt,
+      animationController: AnimationController(
+          vsync: this, duration: Duration(milliseconds: 800)),
+    );
+    setState(() {
+      _messages.insert(0, msg);
+    });
+    msg.animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    for (Msg msg in _messages) {
+      msg.animationController.dispose();
+    }
+    super.dispose();
+  }
+}
+
+class Msg extends StatelessWidget {
+  Msg({this.txt, this.animationController});
+  final String txt;
+  final AnimationController animationController;
+
+  String defaultUserName = "John Doe";
+
+  @override
+  Widget build(BuildContext ctx) {
+    return SizeTransition(
+      sizeFactor:
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+      axisAlignment: 0.0,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.only(right: 18.0),
+              child: CircleAvatar(child: Text(defaultUserName[0])),
+            ),
+            Expanded(
               child: Column(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SingleChildScrollView(
-                        child: FlatPageWrapper(
-                          scrollType: ScrollType.floatingHeader,
-                          header: FlatPageHeader(
-                            prefixWidget: FlatActionButton(
-                              iconData: Icons.menu,
-                            ),
-                            title: "Globtorch Chat",
-                            suffixWidget: FlatActionButton(
-                              iconData: Icons.search,
-                            ),
-                          ),
-                          children: [
-                            FlatSectionHeader(
-                              title: "Recent Chats",
-                            ),
-                            Container(
-                              height: 76.0,
-                              margin: EdgeInsets.symmetric(
-                                vertical: 16.0,
-                              ),
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  FlatProfileImage(
-                                    imageUrl:
-                                        "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80",
-                                    onlineIndicator: true,
-                                    outlineIndicator: true,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            FlatSectionHeader(
-                              title: "Chats",
-                            ),
-                            FlatChatItem(
-                              onPressed: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext ctx) =>
-                                            ChatPage()));
-                              },
-                              name: listchatroom[index]['name'],
-                              profileImage: FlatProfileImage(
-                                imageUrl:
-                                    "https://cdn.dribbble.com/users/1281912/avatars/normal/febecc326c76154551f9d4bbab73f97b.jpg?1468927304",
-                                onlineIndicator: true,
-                              ),
-                              message:
-                                  "Hello World!, Welcome to Flat Social - Flutter UI Kit.",
-                              multiLineMessage: true,
-                            ),
-                            FlatChatItem(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext ctx) =>
-                                            ChatPage()));
-                              },
-                              name: "Akshaye JH",
-                              profileImage: FlatProfileImage(
-                                imageUrl:
-                                    "https://cdn.dribbble.com/users/1281912/avatars/normal/febecc326c76154551f9d4bbab73f97b.jpg?1468927304",
-                                onlineIndicator: true,
-                              ),
-                              message:
-                                  "Hello World!, Welcome to Flat Social - Flutter UI Kit.",
-                              multiLineMessage: true,
-                            ),
-                            FlatChatItem(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext ctx) =>
-                                            ChatPage()));
-                              },
-                              name: "Akshaye JH",
-                              profileImage: FlatProfileImage(
-                                imageUrl:
-                                    "https://cdn.dribbble.com/users/1281912/avatars/normal/febecc326c76154551f9d4bbab73f97b.jpg?1468927304",
-                                onlineIndicator: true,
-                              ),
-                              message:
-                                  "Hello World!, Welcome to Flat Social - Flutter UI Kit.",
-                              multiLineMessage: true,
-                            ),
-                            FlatChatItem(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext ctx) =>
-                                            ChatPage()));
-                              },
-                              name: "Akshaye JH",
-                              profileImage: FlatProfileImage(
-                                imageUrl:
-                                    "https://cdn.dribbble.com/users/1281912/avatars/normal/febecc326c76154551f9d4bbab73f97b.jpg?1468927304",
-                                onlineIndicator: true,
-                              ),
-                              message:
-                                  "Hello World!, Welcome to Flat Social - Flutter UI Kit.",
-                              multiLineMessage: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(defaultUserName,
+                      style: Theme.of(ctx).textTheme.subtitle1),
+                  Container(
+                    margin: const EdgeInsets.only(top: 6.0),
+                    child: Text(txt),
                   ),
                 ],
               ),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

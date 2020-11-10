@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/chat/chathomepage.dart';
+import 'package:globtorch/userScreens/chat/home_screen.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussion/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';
@@ -522,12 +523,14 @@ class _HomePageState extends State<HomePage> {
                       headers: {"Accept": "application/json"});
                   var json = jsonDecode(response.body);
                   var chatroom = json['chatRooms'];
-                  print(json);
+                  var users = json['users'];
+
+                  //print(json);
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              ChatHomepage(chatroomlist: chatroom)));
+                              HomeScreen(chtrom: chatroom, chatsusers: users)));
                 },
               ),
               ListTile(
