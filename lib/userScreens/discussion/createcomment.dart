@@ -81,7 +81,7 @@ class _CreateCommentState extends State<CreateComment> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: new Text(
-                              json['message'],
+                              '${json['message']} \n your comment will be updated shortly',
                               style: TextStyle(color: Colors.green),
                             ),
                             actions: <Widget>[

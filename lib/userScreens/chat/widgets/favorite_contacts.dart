@@ -62,6 +62,8 @@ class FavoriteContacts extends StatelessWidget {
                     var chatroom = json['chatRoom']['messages'];
                     int user = json['currentUser']['id'];
                     String userIdchatr = user.toString();
+                    int chatroomcurrent = json['chatRoom']['id'];
+                    String chatroomcurrentId = chatroomcurrent.toString();
                     // print(chatroom);
                     Navigator.push(
                         context,
@@ -69,7 +71,8 @@ class FavoriteContacts extends StatelessWidget {
                           builder: (_) => ChatScreen(
                               user: chtrm[index]['name'],
                               messagechatroom: chatroom,
-                              chatroomuserId: userIdchatr),
+                              chatroomuserId: userIdchatr,
+                              chatroomcurrent: chatroomcurrentId),
                         ));
                   },
                   child: Padding(

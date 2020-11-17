@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/tools/constants.dart';
@@ -7,6 +5,7 @@ import 'package:globtorch/userScreens/HomePage.dart';
 import 'package:globtorch/userScreens/signup.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class LogIn extends StatefulWidget {
   @override
@@ -19,7 +18,6 @@ class _LogInState extends State<LogIn> {
   final passwordController = TextEditingController();
 
   bool _rememberMe = false;
-  // Boolean variable for CircularProgressIndicator.
   bool visible = false;
   bool isLoading = true;
   String message;

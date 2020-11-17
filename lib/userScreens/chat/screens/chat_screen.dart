@@ -1,38 +1,48 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({
     this.user,
     this.messagechatroom,
     this.chatroomuserId,
+    this.chatroomcurrent,
   });
   final messagechatroom;
   final String chatroomuserId;
+  final chatroomcurrent;
+
   final user;
   @override
   _ChatScreenState createState() => _ChatScreenState(
       chatroomitems: messagechatroom,
       chatuserId: chatroomuserId,
-      username: user);
+      username: user,
+      chatroomcurrentId: chatroomcurrent);
 }
 
 class _ChatScreenState extends State<ChatScreen> {
   final chatroomitems;
   final String chatuserId;
-
+  final chatroomcurrentId;
   var username;
-  _ChatScreenState({this.chatuserId, this.chatroomitems, this.username});
+
+  _ChatScreenState(
+      {this.chatroomcurrentId,
+      this.chatuserId,
+      this.chatroomitems,
+      this.username});
   final TextEditingController _textController = TextEditingController();
   bool _isWriting = false;
-  AnimationController animationController;
+  // AnimationController animationController;
+  final GlobalKey<ScaffoldState> scafoldState = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
 
   _buildMessage(final message, bool isMe, date) {
-    String txt;
-    _textController.clear();
-    setState(() {
-      _isWriting = false;
-    });
-    // print(message);
     return Container(
       margin: !isMe
           ? EdgeInsets.only(
@@ -106,17 +116,24 @@ class _ChatScreenState extends State<ChatScreen> {
             onPressed: () {},
           ),
           Expanded(
-            child: TextField(
-              textCapitalization: TextCapitalization.sentences,
-              controller: _textController,
-              onChanged: (String txt) {
-                setState(() {
-                  _isWriting = txt.length > 0;
-                });
-              },
-              //onSubmitted: _submitMsg,
-              decoration: InputDecoration.collapsed(
-                hintText: 'Send a message...',
+            child: Form(
+              child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: _textController,
+                onChanged: (String txt) {
+                  setState(() {
+                    _isWriting = txt.length > 0;
+                  });
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'You cannot send an empty message';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration.collapsed(
+                  hintText: 'Send a message...',
+                ),
               ),
             ),
           ),
@@ -124,9 +141,37 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: Icon(Icons.send),
               iconSize: 25.0,
               color: Theme.of(context).primaryColor,
-              onPressed: () {}
-              //_isWriting ? () => _submitMsg(_textController.text) : null,
-              ),
+              onPressed: () async {
+                if (_formKey.currentState.validate()) {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  String msg = _textController.text;
+                  String url =
+                      'https://globtorch.com/api/chat_room?api_token=$token';
+                  final response = await http.post(url, headers: {
+                    "Accept": "Application/json"
+                  }, body: {
+                    'message': msg,
+                    'chat_room_id': chatroomcurrentId,
+                    'current_user_id': chatuserId
+                  });
+                  var convertedDatatoJson = jsonDecode(response.body);
+                  _textController.clear();
+                  if (response.statusCode == 200) {
+                    scafoldState.currentState.showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'your message has been succesifully sent \n it will updated Shortly',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+                    );
+                  }
+
+                  print(convertedDatatoJson);
+                }
+              }),
         ],
       ),
     );
@@ -135,6 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scafoldState,
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text(
@@ -154,41 +200,49 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
+      body: Form(
+        key: _formKey,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
                   ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
-                  ),
-                  child: ListView.builder(
-                    //reverse: true,
-                    padding: EdgeInsets.only(top: 15.0),
-                    itemCount: chatroomitems == null ? 0 : chatroomitems.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final message = chatroomitems[index]['message'];
-                      final date = chatroomitems[index]['created_at'];
-                      final bool isMe =
-                          chatroomitems[index]['user_id'] == chatuserId;
-                      return _buildMessage(message, isMe, date);
-                    },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(top: 15.0),
+                      itemCount:
+                          chatroomitems == null ? 0 : chatroomitems.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final message = chatroomitems[index]['message'];
+                        final date = chatroomitems[index]['created_at'];
+                        final bool isMe =
+                            chatroomitems[index]['user_id'] == chatuserId;
+
+                        return _buildMessage(
+                          message,
+                          isMe,
+                          date,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-            _buildMessageComposer(),
-          ],
+              _buildMessageComposer(),
+            ],
+          ),
         ),
       ),
     );

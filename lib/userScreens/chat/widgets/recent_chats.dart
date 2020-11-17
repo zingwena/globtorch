@@ -40,13 +40,17 @@ class RecentChats extends StatelessWidget {
                   http.Response response = await http
                       .get(url, headers: {"Accept": "application/json"});
                   var json = jsonDecode(response.body);
-                  print(json);
+                  int user = json['currentUser']['id'];
+                  String userIdchatr = user.toString();
+                  int chatroomcurrent = json['chatRoom']['id'];
+                  String chatroomcurrentId = chatroomcurrent.toString();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => ChatScreen(
-                          user: chat['name'],
-                        ),
+                            user: chat['name'],
+                            chatroomuserId: userIdchatr,
+                            chatroomcurrent: chatroomcurrentId),
                       ));
                 },
                 child: Container(

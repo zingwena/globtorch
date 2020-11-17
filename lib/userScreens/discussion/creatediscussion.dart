@@ -27,6 +27,12 @@ class _AddDiscussionState extends State<AddDiscussion> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
+  void dispose() {
+    discussionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
@@ -125,7 +131,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: new Text(
-                              json['message'],
+                              "${json['message']} \n Your discusion will be updated shortly",
                               style: TextStyle(color: Colors.green),
                             ),
                             actions: <Widget>[
