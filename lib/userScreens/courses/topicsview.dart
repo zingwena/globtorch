@@ -112,7 +112,10 @@ class _TopicViwState extends State<TopicViw> {
                                             builder: (context) => _loading
                                                 ? Center(
                                                     child:
-                                                        CircularProgressIndicator(),
+                                                        CircularProgressIndicator(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                    ),
                                                   )
                                                 : PDFViewer(
                                                     document: _doc,

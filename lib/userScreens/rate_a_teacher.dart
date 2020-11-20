@@ -1,31 +1,66 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:ui';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-class CreateComment extends StatefulWidget {
-  const CreateComment({Key key, this.discussionId}) : super(key: key);
+class RateTeacher extends StatefulWidget {
+  final String idofteacher;
+
+  const RateTeacher({Key key, this.idofteacher}) : super(key: key);
   @override
-  _CreateCommentState createState() =>
-      _CreateCommentState(discIdd: discussionId);
-  final int discussionId;
+  _RateTeacherState createState() => _RateTeacherState(teacherId: idofteacher);
 }
 
-class _CreateCommentState extends State<CreateComment> {
-  final int discIdd;
+class _RateTeacherState extends State<RateTeacher> {
+  final String teacherId;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController commentController = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController rateController = TextEditingController();
+  var rating = 0.0;
 
-  _CreateCommentState({this.discIdd});
+  _RateTeacherState({this.teacherId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Comment a discussion")),
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text("Rate A teacher"),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           children: <Widget>[
+            Row(
+              children: [
+                Text("Score Rate:"),
+                SizedBox(
+                  width: 20.0,
+                ),
+                SmoothStarRating(
+                  color: Colors.redAccent,
+                  rating: rating,
+                  size: 30,
+                  starCount: 5,
+                  onRated: (value) {
+                    setState(() {
+                      rating = value;
+                    });
+                    // print(rating);
+                  },
+                  allowHalfRating: false,
+                ),
+              ],
+            ),
+            Text(
+              "Please note that yur name will appear to the teacher , but we would like to contact you to address your issue!!",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade600),
+            ),
             Padding(
               padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
               child: Column(
@@ -41,14 +76,14 @@ class _CreateCommentState extends State<CreateComment> {
                   TextFormField(
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'You cannot send an empty comment';
+                        return 'This field cannot be empty';
                       }
                       return null;
                     },
                     maxLines: 4,
                     keyboardType: TextInputType.multiline,
                     maxLength: 2000,
-                    controller: commentController,
+                    controller: rateController,
                     decoration: InputDecoration.collapsed(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0)),
@@ -62,17 +97,24 @@ class _CreateCommentState extends State<CreateComment> {
               child: RaisedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    String comment = commentController.text;
+                    String commentTeacher = rateController.text;
+                    int rate = rating.toInt();
+                    String ratings = rate.toString();
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     var token = prefs.getString('api_token');
+                    final Map<String, dynamic> data = {
+                      'comment': commentTeacher,
+                      'teacher_id': teacherId,
+                      'score': ratings
+                    };
                     final url =
-                        "https://globtorch.com/api/discussions/$discIdd/comment?api_token=$token";
+                        "https://globtorch.com/api/ratings?api_token=$token";
                     http.Response response = await http.post(url,
-                        headers: {"Accept": "application/json"},
-                        body: {'comment': comment});
+                        headers: {"Accept": "application/json"}, body: data);
                     var json = jsonDecode(response.body);
                     print(json);
+                    rateController.clear();
                     if (response.statusCode == 200) {
                       _formKey.currentState.reset();
                       Navigator.of(context).pop();
@@ -81,7 +123,7 @@ class _CreateCommentState extends State<CreateComment> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: new Text(
-                              '${json['message']} \n your comment will be updated shortly',
+                              json['status'],
                               style: TextStyle(color: Colors.green),
                             ),
                             actions: <Widget>[
@@ -101,7 +143,7 @@ class _CreateCommentState extends State<CreateComment> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: new Text(
-                              "Failed to create a comment",
+                              "Failed to rate a teacher",
                               style: TextStyle(color: Colors.red),
                             ),
                             actions: <Widget>[
@@ -116,13 +158,26 @@ class _CreateCommentState extends State<CreateComment> {
                         },
                       );
                     }
+                    /*  _scaffoldKey.currentState.showSnackBar(new SnackBar(
+                        content: new Text(
+                      'Successifully add a discussion!',
+                      style: TextStyle(color: Colors.green),
+                    )));
+                     Navigator.push(
+                        (context),
+                         MaterialPageRoute(
+                             builder: (BuildContext context) => Discussions(
+                                subname: subjectname,
+                                discussionlist: discusionlist,
+                                idsub: subId)));
+                                */
                   }
                 },
                 textColor: Colors.green,
                 label: Icon(Icons.navigate_next),
                 icon: Text("Send"),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
+                    borderRadius: BorderRadius.circular(10.0),
                     side: BorderSide(color: Colors.green)),
               ),
             ),

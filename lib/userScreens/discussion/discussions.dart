@@ -54,55 +54,69 @@ class _DiscussionsState extends State<Discussions> {
       body: ListView.builder(
         itemCount: listdiscussion == null ? 0 : listdiscussion.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            child: Column(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SingleChildScrollView(
-                      child: Card(
-                        child: ListTile(
-                          title: Text(
-                            listdiscussion[index]['title'],
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
+          if (listdiscussion == null) {
+            return Container(
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+                      Text("No Discussions to display"),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          } else
+            return Container(
+              child: Column(
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SingleChildScrollView(
+                        child: Card(
+                          child: ListTile(
+                            title: Text(
+                              listdiscussion[index]['title'],
+                              style: TextStyle(
+                                  fontSize: 20.0, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(listdiscussion[index]['body']),
+                            onTap: () async {
+                              int discussionId = listdiscussion[index]['id'];
+                              String discussionIdStrng =
+                                  discussionId.toString();
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              var token = prefs.getString('api_token');
+                              final discdetailUrl =
+                                  "https://globtorch.com/api/discussions/$discussionIdStrng?api_token=$token";
+                              http.Response response = await http.get(
+                                  discdetailUrl,
+                                  headers: {"Accept": "application/json"});
+                              var json = jsonDecode(response.body);
+                              List comments = json['comments'];
+                              Map<String, dynamic> discdetails = json;
+                              print(json['id']);
+                              int discId = json['id'];
+                              Navigator.push(
+                                  (context),
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          DiscussionDetails(
+                                              discussionId: discId,
+                                              detaildiscussion: discdetails,
+                                              commentslist: comments,
+                                              sbname: subjctnamedis)));
+                            },
                           ),
-                          subtitle: Text(listdiscussion[index]['body']),
-                          onTap: () async {
-                            int discussionId = listdiscussion[index]['id'];
-                            String discussionIdStrng = discussionId.toString();
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-                            var token = prefs.getString('api_token');
-                            final discdetailUrl =
-                                "https://globtorch.com/api/discussions/$discussionIdStrng?api_token=$token";
-                            http.Response response = await http.get(
-                                discdetailUrl,
-                                headers: {"Accept": "application/json"});
-                            var json = jsonDecode(response.body);
-                            List comments = json['comments'];
-                            Map<String, dynamic> discdetails = json;
-                            print(json['id']);
-                            int discId = json['id'];
-                            Navigator.push(
-                                (context),
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        DiscussionDetails(
-                                            discussionId: discId,
-                                            detaildiscussion: discdetails,
-                                            commentslist: comments,
-                                            sbname: subjctnamedis)));
-                          },
                         ),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ),
-          );
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

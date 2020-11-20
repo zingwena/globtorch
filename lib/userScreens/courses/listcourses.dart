@@ -103,8 +103,8 @@ class _ListCoursesState extends State<ListCourses> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    new Expanded(
-                                      child: new RaisedButton(
+                                    Expanded(
+                                      child: RaisedButton(
                                           padding: const EdgeInsets.all(8.0),
                                           textColor: Colors.white,
                                           color: Colors.red,
@@ -127,17 +127,17 @@ class _ListCoursesState extends State<ListCourses> {
                                                 jsonConvert['subjects'];
 
                                             Navigator.of(context).push(
-                                                new CupertinoPageRoute(
+                                                CupertinoPageRoute(
                                                     builder: (BuildContext
                                                             context) =>
-                                                        new ListSubjects(
+                                                        ListSubjects(
                                                           coursesubjects:
                                                               coursesub,
                                                           coursename:
                                                               listcoursesname,
                                                         )));
                                           },
-                                          child: new Text(
+                                          child: Text(
                                             "View Course",
                                             style: TextStyle(
                                                 color: Colors.white,

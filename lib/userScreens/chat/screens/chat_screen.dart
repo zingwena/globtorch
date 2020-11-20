@@ -229,12 +229,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         final date = chatroomitems[index]['created_at'];
                         final bool isMe =
                             chatroomitems[index]['user_id'] == chatuserId;
-
-                        return _buildMessage(
-                          message,
-                          isMe,
-                          date,
-                        );
+                        if (chatroomitems == null) {
+                          return Container(
+                            child: Text("No Message to display"),
+                          );
+                        } else
+                          return _buildMessage(
+                            message,
+                            isMe,
+                            date,
+                          );
                       },
                     ),
                   ),

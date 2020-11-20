@@ -46,56 +46,61 @@ class FavoriteContacts extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: chtrm == null ? 0 : chtrm.length,
               itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () async {
-                    int id = chtrm[index]['id'];
+                if (chtrm == null) {
+                  return GestureDetector(
+                    child: Text("No Favourates to display"),
+                  );
+                } else
+                  return GestureDetector(
+                    onTap: () async {
+                      int id = chtrm[index]['id'];
 
-                    String chatroomId = id.toString();
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    var token = prefs.getString('api_token');
-                    final url =
-                        "https://globtorch.com/api/chat_room/$chatroomId?api_token=$token";
-                    http.Response response = await http
-                        .get(url, headers: {"Accept": "application/json"});
-                    var json = jsonDecode(response.body);
-                    var chatroom = json['chatRoom']['messages'];
-                    int user = json['currentUser']['id'];
-                    String userIdchatr = user.toString();
-                    int chatroomcurrent = json['chatRoom']['id'];
-                    String chatroomcurrentId = chatroomcurrent.toString();
-                    // print(chatroom);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChatScreen(
-                              user: chtrm[index]['name'],
-                              messagechatroom: chatroom,
-                              chatroomuserId: userIdchatr,
-                              chatroomcurrent: chatroomcurrentId),
-                        ));
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        CircleAvatar(
-                          child: Icon(Icons.person),
-                          radius: 35.0,
-                        ),
-                        SizedBox(height: 6.0),
-                        Text(
-                          chtrm[index]['name'],
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w600,
+                      String chatroomId = id.toString();
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+                      final url =
+                          "https://globtorch.com/api/chat_room/$chatroomId?api_token=$token";
+                      http.Response response = await http
+                          .get(url, headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
+                      var chatroom = json['chatRoom']['messages'];
+                      int user = json['currentUser']['id'];
+                      String userIdchatr = user.toString();
+                      int chatroomcurrent = json['chatRoom']['id'];
+                      String chatroomcurrentId = chatroomcurrent.toString();
+                      // print(chatroom);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChatScreen(
+                                user: chtrm[index]['name'],
+                                messagechatroom: chatroom,
+                                chatroomuserId: userIdchatr,
+                                chatroomcurrent: chatroomcurrentId),
+                          ));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        children: <Widget>[
+                          CircleAvatar(
+                            child: Icon(Icons.person),
+                            radius: 35.0,
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 6.0),
+                          Text(
+                            chtrm[index]['name'],
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
+                  );
               },
             ),
           ),

@@ -28,95 +28,101 @@ class RecentChats extends StatelessWidget {
             itemCount: chatroomusers == null ? 0 : chatroomusers.length,
             itemBuilder: (BuildContext context, int index) {
               final chat = chatroomusers[index];
-              return GestureDetector(
-                onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  int id = chat['id'];
-                  String userId = id.toString();
-                  final url =
-                      "https://globtorch.com/api/chat_room/create/$userId?api_token=$token";
-                  http.Response response = await http
-                      .get(url, headers: {"Accept": "application/json"});
-                  var json = jsonDecode(response.body);
-                  int user = json['currentUser']['id'];
-                  String userIdchatr = user.toString();
-                  int chatroomcurrent = json['chatRoom']['id'];
-                  String chatroomcurrentId = chatroomcurrent.toString();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ChatScreen(
-                            user: chat['name'],
-                            chatroomuserId: userIdchatr,
-                            chatroomcurrent: chatroomcurrentId),
-                      ));
-                },
-                child: Container(
-                  margin: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 20.0),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                  decoration: BoxDecoration(
-                    //color: chat. ? Color(0xFFFFEFEE) :
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          CircleAvatar(
-                            radius: 35.0,
-                            child: Icon(Icons.person),
-                          ),
-                          SizedBox(width: 10.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                chat['name'],
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.45,
-                                child: Text(
-                                  "",
-                                  //chat.text,
-                                  style: TextStyle(
-                                    color: Colors.blueGrey,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+              if (chatroomusers == null) {
+                return GestureDetector(
+                  child: Container(child: Text("No results to display")),
+                );
+              } else
+                return GestureDetector(
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+                    int id = chat['id'];
+                    String userId = id.toString();
+                    final url =
+                        "https://globtorch.com/api/chat_room/create/$userId?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    int user = json['currentUser']['id'];
+                    String userIdchatr = user.toString();
+                    int chatroomcurrent = json['chatRoom']['id'];
+                    String chatroomcurrentId = chatroomcurrent.toString();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatScreen(
+                              user: chat['name'],
+                              chatroomuserId: userIdchatr,
+                              chatroomcurrent: chatroomcurrentId),
+                        ));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 20.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    decoration: BoxDecoration(
+                      //color: chat. ? Color(0xFFFFEFEE) :
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
                       ),
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            "",
-                            //chat.time,
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            CircleAvatar(
+                              radius: 35.0,
+                              child: Icon(Icons.person),
                             ),
-                          ),
-                          SizedBox(height: 5.0),
-                          /*  chat.
+                            SizedBox(width: 10.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  chat['name'],
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 5.0),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.45,
+                                  child: Text(
+                                    "",
+                                    //chat.text,
+                                    style: TextStyle(
+                                      color: Colors.blueGrey,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: <Widget>[
+                            Text(
+                              "",
+                              //chat.time,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 5.0),
+                            /*  chat.
                               ? Container(
                                   width: 40.0,
                                   height: 20.0,
@@ -136,12 +142,12 @@ class RecentChats extends StatelessWidget {
                                 )
                               : Text(''),
                               */
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
             },
           ),
         ),

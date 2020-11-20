@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/chat/home_screen.dart';
+import 'package:globtorch/userScreens/coursereport.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/discussion/discussions.dart';
 import 'package:globtorch/userScreens/library.dart';
 import 'package:globtorch/userScreens/notification.dart';
-import 'package:globtorch/userScreens/report.dart';
 import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
@@ -165,10 +165,7 @@ class _HomePageState extends State<HomePage> {
                   fontSize: 35),
             ),
             SizedBox(
-              height: 10.0,
-            ),
-            SizedBox(
-              height: 10.0,
+              height: 20.0,
             ),
             Container(
               child: Row(
@@ -415,9 +412,19 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("My Teachers"),
-                onTap: () {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (BuildContext context) => MyTeachers()));
+                onTap: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  final url =
+                      "https://globtorch.com/api/teachers?api_token=$token";
+                  http.Response response = await http
+                      .get(url, headers: {"Accept": "application/json"});
+                  var json = jsonDecode(response.body);
+                  var listteachers = json['teachers'];
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          MyTeachers(myteachers: listteachers)));
                 },
               ),
 
@@ -446,8 +453,18 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Report"),
                 onTap: () async {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (BuildContext context) => Reports()));
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  final url =
+                      "https://globtorch.com/api/users/courses?api_token=$token";
+                  http.Response response = await http
+                      .get(url, headers: {"Accept": "application/json"});
+                  var json = jsonDecode(response.body);
+                  List courselist = json;
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          ReportNavigation(listcse: courselist)));
                 },
               ),
               ListTile(
