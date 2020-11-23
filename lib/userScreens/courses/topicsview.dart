@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
@@ -18,6 +19,30 @@ class _TopicViwState extends State<TopicViw> {
   final Map<String, dynamic> contentname;
 
   final String content;
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   _TopicViwState({this.contentname, this.content});
   PDFDocument _doc;
@@ -81,50 +106,72 @@ class _TopicViwState extends State<TopicViw> {
                                 borderRadius: new BorderRadius.circular(50.0)),
                             onPressed: () async {
                               final status = await Permission.storage.request();
+                              if (isInternetOn) {
+                                if (status.isGranted) {
+                                  //print(contentname['topic']);
+                                  for (var contentloop in contentname['topic']
+                                      ['contents']) {
+                                    if (contentloop['type'] == 'pdf') {
+                                      var contentID = contentloop['id'];
+                                      String stringcontentID =
+                                          contentID.toString();
 
-                              if (status.isGranted) {
-                                //print(contentname['topic']);
-                                for (var contentloop in contentname['topic']
-                                    ['contents']) {
-                                  if (contentloop['type'] == 'pdf') {
-                                    var contentID = contentloop['id'];
-                                    String stringcontentID =
-                                        contentID.toString();
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
 
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
+                                      var token = prefs.getString('api_token');
+                                      final url =
+                                          "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
 
-                                    var token = prefs.getString('api_token');
-                                    final url =
-                                        "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
-
-                                    setState(() {
-                                      _loading = true;
-                                    });
-                                    final doc = await PDFDocument.fromURL(url);
-                                    setState(() {
-                                      _doc = doc;
-                                      _loading = false;
-                                    });
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => _loading
-                                                ? Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      backgroundColor:
+                                      setState(() {
+                                        _loading = true;
+                                      });
+                                      final doc =
+                                          await PDFDocument.fromURL(url);
+                                      setState(() {
+                                        _doc = doc;
+                                        _loading = false;
+                                      });
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => _loading
+                                                  ? Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                    )
+                                                  : PDFViewer(
+                                                      document: _doc,
+                                                      indicatorBackground:
                                                           Colors.red,
-                                                    ),
-                                                  )
-                                                : PDFViewer(
-                                                    document: _doc,
-                                                    indicatorBackground:
-                                                        Colors.red,
-                                                    showPicker: true,
-                                                    showIndicator: true,
-                                                  )));
+                                                      showPicker: true,
+                                                      showIndicator: true,
+                                                    )));
+                                    }
                                   }
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: new Text(
+                                            "You are no longer connected to the internet"),
+                                        content: Text(
+                                            "Please turn on wifi or mobile data"),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: new Text("OK"),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                 }
                               }
                             },

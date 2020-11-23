@@ -1,16 +1,51 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/courses/listcoursetopics.dart';
 
-class ListChapters extends StatelessWidget {
+class ListChapters extends StatefulWidget {
   final List coursechapters;
   final String subname;
   ListChapters({this.coursechapters, this.subname});
 
   @override
+  _ListChaptersState createState() =>
+      _ListChaptersState(subnamee: subname, coursechapterss: coursechapters);
+}
+
+class _ListChaptersState extends State<ListChapters> {
+  final List coursechapterss;
+  final String subnamee;
+
+  _ListChaptersState({this.coursechapterss, this.subnamee});
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    //print(coursechapters);
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
@@ -24,7 +59,7 @@ class ListChapters extends StatelessWidget {
                       Expanded(
                           child: Container(
                               alignment: Alignment.center,
-                              child: Text(subname,
+                              child: Text(subnamee,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -37,7 +72,7 @@ class ListChapters extends StatelessWidget {
             centerTitle: true,
           )),
       body: ListView.builder(
-          itemCount: coursechapters == null ? 0 : coursechapters.length,
+          itemCount: coursechapterss == null ? 0 : coursechapterss.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               child: Column(
@@ -53,7 +88,7 @@ class ListChapters extends StatelessWidget {
                         child: Card(
                           child: ListTile(
                             title: Text(
-                              "${coursechapters[index]['name']}",
+                              "${coursechapterss[index]['name']}",
                               style: Style.headerTextStyle,
                             ),
                             subtitle: Container(
@@ -62,9 +97,9 @@ class ListChapters extends StatelessWidget {
                                 child: FlatButton(
                                   onPressed: () {
                                     var topicname =
-                                        coursechapters[index]['name'];
+                                        coursechapterss[index]['name'];
                                     List coursetopics =
-                                        coursechapters[index]['topics'];
+                                        coursechapterss[index]['topics'];
                                     Navigator.of(context).push(
                                         new CupertinoPageRoute(
                                             builder: (BuildContext context) =>
@@ -84,7 +119,7 @@ class ListChapters extends StatelessWidget {
                             dense: true,
                             onTap: () {
                               List coursetopics =
-                                  coursechapters[index]['topics'];
+                                  coursechapterss[index]['topics'];
                               Navigator.of(context).push(new CupertinoPageRoute(
                                   builder: (BuildContext context) =>
                                       new ListTopicsContent(

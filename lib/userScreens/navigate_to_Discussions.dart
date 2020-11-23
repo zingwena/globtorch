@@ -1,25 +1,22 @@
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/courses/listcoursesubjects.dart';
+import 'package:globtorch/userScreens/fromcoursediscussions.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ListCourses extends StatefulWidget {
-  const ListCourses({Key key, this.listcse}) : super(key: key);
-
-  @override
-  _ListCoursesState createState() => _ListCoursesState(listcourses: listcse);
+class CourseDiscussions extends StatefulWidget {
   final List listcse;
+
+  const CourseDiscussions({Key key, this.listcse}) : super(key: key);
+  @override
+  _CourseDiscussionsState createState() =>
+      _CourseDiscussionsState(listcourses: listcse);
 }
 
-class _ListCoursesState extends State<ListCourses> {
-  final List listcourses;
-
-  _ListCoursesState({this.listcourses});
+class _CourseDiscussionsState extends State<CourseDiscussions> {
   var wifiBSSID;
   var wifiIP;
   var wifiName;
@@ -45,7 +42,9 @@ class _ListCoursesState extends State<ListCourses> {
     }
   }
 
-  @override
+  final List listcourses;
+
+  _CourseDiscussionsState({this.listcourses});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +69,7 @@ class _ListCoursesState extends State<ListCourses> {
                 FadeAnimation(
                   1,
                   Text(
-                    "My Courses",
+                    "Discussions",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -90,47 +89,51 @@ class _ListCoursesState extends State<ListCourses> {
               child: ListView.builder(
                 itemCount: listcourses == null ? 0 : listcourses.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusDirectional.circular(30),
-                        side: BorderSide(
-                            width: 8, color: Colors.greenAccent[700])),
-                    clipBehavior: Clip.antiAlias,
-                    margin: EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 0.0),
-                    child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            CircleAvatar(
-                              backgroundImage:
-                                  AssetImage('assets/images/globt.jpg'),
-                            ),
-                            Text(
-                              "${listcourses[index]["name"]}",
-                              style: Style.titleTextStyle,
-                            ),
-                            Text(
-                              "${listcourses[index]["price"]}",
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w700,
+                  if (listcourses == null) {
+                    return Container(
+                      child: Column(
+                        children: [
+                          Text("No Courses to display"),
+                        ],
+                      ),
+                    );
+                  } else
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusDirectional.circular(30),
+                          side: BorderSide(
+                              width: 8, color: Colors.greenAccent[700])),
+                      clipBehavior: Clip.antiAlias,
+                      margin: EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 0.0),
+                      child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('assets/images/globt.jpg'),
                               ),
-                            ),
-                            Text(
-                              "${listcourses[index]["level"]}",
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            ),
-                            Separator(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                  child: RaisedButton(
-                                      padding: const EdgeInsets.all(8.0),
+                              Text(
+                                "${listcourses[index]["name"]}",
+                                style: Style.titleTextStyle,
+                              ),
+                              Text(
+                                "${listcourses[index]["level"]}",
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              Separator(),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  new RaisedButton(
+                                      //padding: const EdgeInsets.all(8.0),
+                                      shape: new RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(15.0)),
                                       textColor: Colors.white,
                                       color: Colors.red,
                                       onPressed: () async {
@@ -153,10 +156,10 @@ class _ListCoursesState extends State<ListCourses> {
                                               jsonConvert['subjects'];
 
                                           Navigator.of(context).push(
-                                              CupertinoPageRoute(
+                                              MaterialPageRoute(
                                                   builder:
                                                       (BuildContext context) =>
-                                                          ListSubjects(
+                                                          FromCourseDiscussions(
                                                             coursesubjects:
                                                                 coursesub,
                                                             coursename:
@@ -185,22 +188,21 @@ class _ListCoursesState extends State<ListCourses> {
                                           );
                                         }
                                       },
-                                      child: Text(
-                                        "View Course",
+                                      child: new Text(
+                                        "View Discussions",
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                       )),
-                                ),
-                                Container(
-                                  width: 30.0,
-                                ),
-                              ],
-                            ),
-                          ],
-                        )),
-                    color: Colors.blue[500],
-                  );
+                                  Container(
+                                    width: 30.0,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                      color: Colors.blue[500],
+                    );
                 },
               ),
             ),

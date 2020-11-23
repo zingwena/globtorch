@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
@@ -8,10 +9,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ListSubjects extends StatelessWidget {
+class ListSubjects extends StatefulWidget {
   final List coursesubjects;
   final String coursename;
   ListSubjects({this.coursesubjects, this.coursename});
+  @override
+  _ListSubjectsState createState() => _ListSubjectsState(
+      coursenamee: coursename, coursesubjectss: coursesubjects);
+}
+
+class _ListSubjectsState extends State<ListSubjects> {
+  final List coursesubjectss;
+  final String coursenamee;
+
+  _ListSubjectsState({this.coursesubjectss, this.coursenamee});
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +63,7 @@ class ListSubjects extends StatelessWidget {
                       Expanded(
                           child: Container(
                               alignment: Alignment.center,
-                              child: Text(coursename,
+                              child: Text(coursenamee,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -41,7 +76,7 @@ class ListSubjects extends StatelessWidget {
             centerTitle: true,
           )),
       body: ListView.builder(
-          itemCount: coursesubjects == null ? 0 : coursesubjects.length,
+          itemCount: coursesubjectss == null ? 0 : coursesubjectss.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               child: Column(
@@ -55,7 +90,7 @@ class ListSubjects extends StatelessWidget {
                             height: 110,
                             child: ListTile(
                               title: Text(
-                                "${coursesubjects[index]['name']}",
+                                "${coursesubjectss[index]['name']}",
                                 style: Style.headerTextStyle,
                               ),
                               subtitle: Container(
@@ -63,9 +98,9 @@ class ListSubjects extends StatelessWidget {
                                   child: FlatButton(
                                     onPressed: () {
                                       var subjectname =
-                                          coursesubjects[index]['name'];
+                                          coursesubjectss[index]['name'];
                                       List coursechap =
-                                          coursesubjects[index]['chapters'];
+                                          coursesubjectss[index]['chapters'];
 
                                       Navigator.of(context).push(
                                           new MaterialPageRoute(
@@ -89,37 +124,62 @@ class ListSubjects extends StatelessWidget {
                                     Expanded(
                                       child: FlatButton.icon(
                                         onPressed: () async {
-                                          int subId =
-                                              coursesubjects[index]['id'];
-                                          String subjectIdString =
-                                              subId.toString();
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          var token =
-                                              prefs.getString('api_token');
-                                          final asignUrl =
-                                              "https://globtorch.com/api/subjects/$subjectIdString/assignments?api_token=$token";
-                                          http.Response response = await http
-                                              .get(asignUrl, headers: {
-                                            "Accept": "application/json"
-                                          });
-                                          var json = jsonDecode(response.body);
+                                          if (isInternetOn) {
+                                            int subId =
+                                                coursesubjectss[index]['id'];
+                                            String subjectIdString =
+                                                subId.toString();
+                                            SharedPreferences prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            var token =
+                                                prefs.getString('api_token');
+                                            final asignUrl =
+                                                "https://globtorch.com/api/subjects/$subjectIdString/assignments?api_token=$token";
+                                            http.Response response = await http
+                                                .get(asignUrl, headers: {
+                                              "Accept": "application/json"
+                                            });
+                                            var json =
+                                                jsonDecode(response.body);
 
-                                          List listassignments =
-                                              json["assignments"];
-                                          var subjectname =
-                                              coursesubjects[index]['name'];
-                                          Navigator.push(
-                                              (context),
-                                              MaterialPageRoute(
-                                                  builder: (BuildContext
-                                                          context) =>
-                                                      Assignments(
-                                                          listasignmnts:
-                                                              listassignments,
-                                                          subname:
-                                                              subjectname)));
+                                            List listassignments =
+                                                json["assignments"];
+                                            var subjectname =
+                                                coursesubjectss[index]['name'];
+                                            Navigator.push(
+                                                (context),
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        Assignments(
+                                                            listasignmnts:
+                                                                listassignments,
+                                                            subname:
+                                                                subjectname)));
+                                          } else {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: new Text(
+                                                    "Failed to create a discussion",
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      child: new Text("OK"),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
                                         },
                                         label: Text("Assignments"),
                                         color: Colors.red,
@@ -136,38 +196,62 @@ class ListSubjects extends StatelessWidget {
                                         child: FlatButton.icon(
                                       label: Text("Discussions"),
                                       onPressed: () async {
-                                        int subId = coursesubjects[index]['id'];
-                                        String subjectIdString =
-                                            subId.toString();
-                                        SharedPreferences prefs =
-                                            await SharedPreferences
-                                                .getInstance();
-                                        var token =
-                                            prefs.getString('api_token');
-                                        final disUrl =
-                                            "https://globtorch.com/api/subjects/$subjectIdString/discussions?api_token=$token";
+                                        if (isInternetOn) {
+                                          int subId =
+                                              coursesubjectss[index]['id'];
+                                          String subjectIdString =
+                                              subId.toString();
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          var token =
+                                              prefs.getString('api_token');
+                                          final disUrl =
+                                              "https://globtorch.com/api/subjects/$subjectIdString/discussions?api_token=$token";
 
-                                        http.Response response = await http
-                                            .get(disUrl, headers: {
-                                          "Accept": "application/json"
-                                        });
-                                        var json = jsonDecode(response.body);
+                                          http.Response response = await http
+                                              .get(disUrl, headers: {
+                                            "Accept": "application/json"
+                                          });
+                                          var json = jsonDecode(response.body);
 
-                                        List disclist = json;
-                                        //print(disclist);
-                                        var subjectname =
-                                            coursesubjects[index]['name'];
-                                        Navigator.push(
-                                            (context),
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        Discussions(
-                                                            subname:
-                                                                subjectname,
-                                                            discussionlist:
-                                                                disclist,
-                                                            idsub: subId)));
+                                          List disclist = json;
+
+                                          var subjectname =
+                                              coursesubjectss[index]['name'];
+                                          Navigator.push(
+                                              (context),
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          Discussions(
+                                                              subname:
+                                                                  subjectname,
+                                                              discussionlist:
+                                                                  disclist,
+                                                              idsub: subId)));
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: new Text(
+                                                    "You are no longer connected to the internet"),
+                                                content: Text(
+                                                    "Please turn on wifi or mobile data"),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: new Text("OK"),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
                                       },
                                       autofocus: true,
                                       color: Colors.teal,

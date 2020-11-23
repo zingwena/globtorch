@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -38,6 +39,30 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
   final GlobalKey<ScaffoldState> scafoldState = GlobalKey<ScaffoldState>();
 
   final _formKey = GlobalKey<FormState>();
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -77,25 +102,45 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
                   String comment = _commentController.text;
-                  String url =
-                      'https://globtorch.com/api/discussions/$discId/comment?api_token=$token';
-                  final response = await http.post(url,
-                      headers: {"Accept": "Application/json"},
-                      body: {'comment': comment});
-                  var convertedDatatoJson = jsonDecode(response.body);
-                  _commentController.clear();
-                  if (response.statusCode == 200) {
-                    scafoldState.currentState.showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          'Your comment has been succesifully sent \n it will updated shortly',
-                          style: TextStyle(color: Colors.green),
+                  if (isInternetOn) {
+                    String url =
+                        'https://globtorch.com/api/discussions/$discId/comment?api_token=$token';
+                    final response = await http.post(url,
+                        headers: {"Accept": "Application/json"},
+                        body: {'comment': comment});
+                    var convertedDatatoJson = jsonDecode(response.body);
+                    _commentController.clear();
+                    if (response.statusCode == 200) {
+                      scafoldState.currentState.showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.white,
+                          content: const Text(
+                            'Your comment has been succesifully sent \n it will updated shortly',
+                            style: TextStyle(color: Colors.green),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   }
-
-                  print(convertedDatatoJson);
                 }
               }),
         ],
@@ -133,82 +178,86 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
           )),
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Title:",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  discussiondetails['title'],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Text(
-              discussiondetails['body'],
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Comments:",
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: listcomentss == null ? 0 : listcomentss.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (listcomentss == null) {
-                    return Container(
-                      child: Column(
-                        children: [
-                          Text("No Comments to display"),
-                        ],
+        child: isInternetOn
+            ? Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Title:",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15.0),
                       ),
-                    );
-                  } else
-                    return Container(
-                      child: Column(
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SingleChildScrollView(
-                                child: ListTile(
-                                  leading: new CircleAvatar(
-                                    child: new Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                      size: 20.0,
-                                    ),
-                                  ),
-                                  title: Text(
-                                      "${listcomentss[index]['user']['name']} ${listcomentss[index]['user']['surname']}"),
-                                  subtitle:
-                                      Text(listcomentss[index]['comment']),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
+                      SizedBox(
+                        width: 10.0,
                       ),
-                    );
-                },
-              ),
-            ),
-            _buildComment()
-          ],
-        ),
+                      Text(
+                        discussiondetails['title'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15.0),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Text(
+                    discussiondetails['body'],
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Comments:",
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: listcomentss == null ? 0 : listcomentss.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (listcomentss == null) {
+                          return Container(
+                            child: Column(
+                              children: [
+                                Text("No Comments to display"),
+                              ],
+                            ),
+                          );
+                        } else
+                          return Container(
+                            child: Column(
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SingleChildScrollView(
+                                      child: ListTile(
+                                        leading: new CircleAvatar(
+                                          child: new Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                            size: 20.0,
+                                          ),
+                                        ),
+                                        title: Text(
+                                            "${listcomentss[index]['user']['name']} ${listcomentss[index]['user']['surname']}"),
+                                        subtitle: Text(
+                                            listcomentss[index]['comment']),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                      },
+                    ),
+                  ),
+                  _buildComment()
+                ],
+              )
+            : Text("No Internet connection, comments cann't be displayed"),
       ),
       // floatingActionButton: _buildComment(),
     );

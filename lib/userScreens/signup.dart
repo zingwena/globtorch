@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
@@ -8,18 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:globtorch/tools/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/userScreens/loginpage.dart';
-import 'dart:async';
 
 class SignUpPage extends StatefulWidget {
+  final List listc;
+
+  const SignUpPage({Key key, this.listc}) : super(key: key);
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _SignUpPageState createState() => _SignUpPageState(listcourses: listc);
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final List listcourses;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   static Pattern pattern =
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-  RegExp regex = new RegExp(pattern);
+  RegExp regex = RegExp(pattern);
   String _dropDownValue;
   final fnameController = TextEditingController();
   final surnameController = TextEditingController();
@@ -29,9 +34,35 @@ class _SignUpPageState extends State<SignUpPage> {
   final referralController = TextEditingController();
   final passwordControlller = TextEditingController();
   String _fname, _surname, _phone, _email, _country, _password, _referals;
+  _SignUpPageState({this.listcourses});
+
   // Boolean variable for CircularProgressIndicator.
   bool visible = false;
   bool isLoading = true;
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -566,24 +597,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchCourses();
-  }
-
-  List listcourses;
-  Future fetchCourses() async {
-    http.Response response = await http.get("https://globtorch.com/api/courses",
-        headers: {"Accept": "application/json"});
-    var json = jsonDecode(response.body);
-    setState(() {
-      listcourses = json;
-    });
-
-    //debugPrint(listcourses.toString());
-  }
-
   Widget _selectCourseToPay() {
     return Scaffold(
       body: Container(
@@ -666,11 +679,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                new Container(
+                                Container(
                                   width: 30.0,
                                 ),
-                                new Expanded(
-                                  child: new RaisedButton(
+                                Expanded(
+                                  child: RaisedButton(
                                       padding: const EdgeInsets.all(8.0),
                                       textColor: Colors.white,
                                       color: Colors.red,
@@ -685,89 +698,144 @@ class _SignUpPageState extends State<SignUpPage> {
                                         String referral =
                                             referralController.text;
                                         _formKey.currentState.save();
-
-                                        // Showing CircularProgressIndicator using State.
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: new Text(
-                                                "Please wait......",
-                                                style: TextStyle(
-                                                    color: Colors.green),
-                                              ),
-                                              actions: <Widget>[
-                                                Visibility(
-                                                    visible: visible,
-                                                    child: Container(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 20),
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                Colors.red),
-                                                      ),
-                                                    ))
-                                              ],
-                                            );
-                                          },
-                                        );
-                                        setState(() {
-                                          visible = true;
-                                          isLoading = true;
-                                        });
-                                        // API URL
-                                        String url =
-                                            'https://globtorch.com/api/signup';
-
-                                        // Store all data with Param Name.
-
-                                        var data = {
-                                          'name': fname,
-                                          'surname': sname,
-                                          'phone': phone,
-                                          'email': email,
-                                          'country': country,
-                                          'password': pwd,
-                                          'course_id': id,
-                                          'paynow_ref': referral,
-                                        };
-                                        print(jsonEncode(data));
-
-                                        // Starting Web Call with data.
-                                        final response = await http.post(url,
-                                            body: jsonEncode(data),
-                                            headers: {
-                                              "Accept": "application/json",
-                                              "Content-type": "application/json"
-                                            });
-                                        var convertedDatatoJson =
-                                            jsonDecode(response.body);
-                                        //print(convertedDatatoJson);
-                                        //print(response.statusCode);
-
-                                        if (response.statusCode == 422) {
+                                        if (isInternetOn) {
+                                          // Showing CircularProgressIndicator using State.
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                  "Please wait......",
+                                                  style: TextStyle(
+                                                      color: Colors.green),
+                                                ),
+                                                actions: <Widget>[
+                                                  Visibility(
+                                                      visible: visible,
+                                                      child: Container(
+                                                        margin: EdgeInsets.only(
+                                                            bottom: 20),
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          valueColor:
+                                                              AlwaysStoppedAnimation(
+                                                                  Colors.red),
+                                                        ),
+                                                      ))
+                                                ],
+                                              );
+                                            },
+                                          );
                                           setState(() {
-                                            visible = false;
+                                            visible = true;
+                                            isLoading = true;
                                           });
-                                          String mesg =
-                                              convertedDatatoJson['message']
-                                                  .toString()
-                                                  .trim();
-                                          String error =
-                                              convertedDatatoJson['errors']
-                                                  .toString()
-                                                  .trimLeft();
+
+                                          String url =
+                                              'https://globtorch.com/api/signup';
+
+                                          var data = {
+                                            'name': fname,
+                                            'surname': sname,
+                                            'phone': phone,
+                                            'email': email,
+                                            'country': country,
+                                            'password': pwd,
+                                            'course_id': id,
+                                            'paynow_ref': referral,
+                                          };
+                                          print(jsonEncode(data));
+
+                                          // Starting Web Call with data.
+                                          final response = await http.post(url,
+                                              body: jsonEncode(data),
+                                              headers: {
+                                                "Accept": "application/json",
+                                                "Content-type":
+                                                    "application/json"
+                                              });
+                                          var convertedDatatoJson =
+                                              jsonDecode(response.body);
+                                          //print(convertedDatatoJson);
+                                          //print(response.statusCode);
+
+                                          if (response.statusCode == 422) {
+                                            setState(() {
+                                              visible = false;
+                                            });
+                                            String mesg =
+                                                convertedDatatoJson['message']
+                                                    .toString()
+                                                    .trim();
+                                            String error =
+                                                convertedDatatoJson['errors']
+                                                    .toString()
+                                                    .trimLeft();
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    '$mesg $error',
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      child: Text("OK"),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else if (response.statusCode ==
+                                              200) {
+                                            String schoolId =
+                                                convertedDatatoJson['data']
+                                                    ['school_id'];
+                                            setState(() {
+                                              visible = false;
+                                            });
+
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    "Successifully registered, Please take this ID for LogIn $schoolId",
+                                                    style: TextStyle(
+                                                        color: Colors.green),
+                                                  ),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      child: Text("Login"),
+                                                      onPressed: () {
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        LogIn()));
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        } else {
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
                                                 title: new Text(
-                                                  '$mesg $error',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                ),
+                                                    "You are no longer connected to the internet"),
+                                                content: Text(
+                                                    "Please turn on wifi or mobile data"),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: new Text("OK"),
@@ -780,42 +848,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                               );
                                             },
                                           );
-                                        } else if (response.statusCode == 200) {
-                                          String schoolId =
-                                              convertedDatatoJson['data']
-                                                  ['school_id'];
-                                          setState(() {
-                                            visible = false;
-                                          });
-
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: new Text(
-                                                  "Successifully registered, Please take this ID for LogIn $schoolId",
-                                                  style: TextStyle(
-                                                      color: Colors.green),
-                                                ),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: new Text("Login"),
-                                                    onPressed: () {
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      LogIn()));
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
                                         }
                                       },
-                                      child: new Text("Pay Now")),
+                                      child: Text("Pay Now")),
                                 ),
                               ],
                             ),

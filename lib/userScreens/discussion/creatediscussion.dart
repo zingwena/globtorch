@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,30 @@ class _AddDiscussionState extends State<AddDiscussion> {
   _AddDiscussionState({this.discusionlist, this.subjectname, this.subId});
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -116,57 +141,58 @@ class _AddDiscussionState extends State<AddDiscussion> {
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     var token = prefs.getString('api_token');
-                    final url =
-                        "https://globtorch.com/api/subjects/$subId/discussions?api_token=$token";
-                    http.Response response = await http.post(url,
-                        headers: {"Accept": "application/json"},
-                        body: {'title': title, 'body': discussion});
-                    var json = jsonDecode(response.body);
-                    // print(json);
-                    if (response.statusCode == 200) {
-                      _formKey.currentState.reset();
-                      Navigator.of(context).pop();
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: new Text(
-                              "${json['message']} \n Your discusion will be updated shortly",
-                              style: TextStyle(color: Colors.green),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: new Text("OK"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
+                    if (isInternetOn) {
+                      final url =
+                          "https://globtorch.com/api/subjects/$subId/discussions?api_token=$token";
+                      http.Response response = await http.post(url,
+                          headers: {"Accept": "application/json"},
+                          body: {'title': title, 'body': discussion});
+                      var json = jsonDecode(response.body);
+                      // print(json);
+                      if (response.statusCode == 200) {
+                        _formKey.currentState.reset();
+                        Navigator.of(context).pop();
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                "${json['message']} \n Your discusion will be updated shortly",
+                                style: TextStyle(color: Colors.green),
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: new Text(
-                              "Failed to create a discussion",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: new Text("OK"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                "Failed to create a discussion",
+                                style: TextStyle(color: Colors.red),
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                    /*  _scaffoldKey.currentState.showSnackBar(new SnackBar(
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                      /*  _scaffoldKey.currentState.showSnackBar(new SnackBar(
                         content: new Text(
                       'Successifully add a discussion!',
                       style: TextStyle(color: Colors.green),
@@ -179,6 +205,26 @@ class _AddDiscussionState extends State<AddDiscussion> {
                                 discussionlist: discusionlist,
                                 idsub: subId)));
                                 */
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   }
                 },
                 textColor: Colors.green,

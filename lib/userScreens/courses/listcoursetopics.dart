@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:globtorch/userScreens/courses/topicsview.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,30 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
   bool visible = false;
   bool isLoading = true;
   String localPath;
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,62 +107,106 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                 width: 10.0,
                                 child: FlatButton(
                                   onPressed: () async {
-                                    setState(() {
-                                      visible = true;
-                                      isLoading = true;
-                                    });
-
-                                    int id = coursetopics[index]['id'];
-
-                                    String stringId = id.toString();
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
-                                    var token = prefs.getString('api_token');
-
-                                    String url =
-                                        "https://globtorch.com/api/topics";
-                                    String fullUrl =
-                                        '$url/$stringId?api_token=$token';
-
-                                    http.Response response = await http.get(
-                                      fullUrl,
-                                      headers: {"Accept": "application/json"},
-                                    );
-                                    var jsonConvert = jsonDecode(response.body);
-                                    Map<String, dynamic> topicncontent =
-                                        jsonConvert;
-                                    if (response.statusCode == 200 ||
-                                        response.statusCode == 201) {
+                                    if (isInternetOn) {
                                       setState(() {
-                                        visible = false;
+                                        visible = true;
+                                        isLoading = true;
                                       });
-                                      var tpccontentname =
-                                          coursetopics[index]['name'];
-                                      //print(topicncontent);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => jsonConvert !=
-                                                      null
-                                                  ? TopicViw(
-                                                      contentname:
-                                                          topicncontent,
-                                                      contentnaming:
-                                                          tpccontentname)
-                                                  : Center(
-                                                      child:
-                                                          CircularProgressIndicator())));
-                                    } else if (response.statusCode == 401 ||
-                                        response.statusCode == 403) {
+
+                                      int id = coursetopics[index]['id'];
+
+                                      String stringId = id.toString();
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      var token = prefs.getString('api_token');
+
+                                      String url =
+                                          "https://globtorch.com/api/topics";
+                                      String fullUrl =
+                                          '$url/$stringId?api_token=$token';
+
+                                      http.Response response = await http.get(
+                                        fullUrl,
+                                        headers: {"Accept": "application/json"},
+                                      );
+                                      var jsonConvert =
+                                          jsonDecode(response.body);
+                                      Map<String, dynamic> topicncontent =
+                                          jsonConvert;
+                                      if (response.statusCode == 200 ||
+                                          response.statusCode == 201) {
+                                        setState(() {
+                                          visible = false;
+                                        });
+                                        var tpccontentname =
+                                            coursetopics[index]['name'];
+                                        //print(topicncontent);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    jsonConvert != null
+                                                        ? TopicViw(
+                                                            contentname:
+                                                                topicncontent,
+                                                            contentnaming:
+                                                                tpccontentname)
+                                                        : Center(
+                                                            child:
+                                                                CircularProgressIndicator())));
+                                      } else if (response.statusCode == 401 ||
+                                          response.statusCode == 403) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: new Text(
+                                                "$topicncontent",
+                                                style: TextStyle(
+                                                    color: prefix0.Colors.red),
+                                              ),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: new Text("OK"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: new Text(
+                                                "Failed",
+                                                style: TextStyle(
+                                                    color: prefix0.Colors.red),
+                                              ),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: new Text("OK"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
                                             title: new Text(
-                                              "$topicncontent",
-                                              style: TextStyle(
-                                                  color: prefix0.Colors.red),
-                                            ),
+                                                "You are no longer connected to the internet"),
+                                            content: Text(
+                                                "Please turn on wifi or mobile data"),
                                             actions: <Widget>[
                                               FlatButton(
                                                 child: new Text("OK"),

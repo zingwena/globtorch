@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/tools/constants.dart';
@@ -21,6 +22,29 @@ class _LogInState extends State<LogIn> {
   bool visible = false;
   bool isLoading = true;
   String message;
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,80 +323,91 @@ class _LogInState extends State<LogIn> {
         visible = true;
         isLoading = true;
       });
-      String url = 'https://globtorch.com/api/login';
-      final response = await http.post(url,
-          headers: {"Accept": "Application/json"},
-          body: {'school_id': username, 'password': password});
-      var convertedDatatoJson = jsonDecode(response.body);
-      var token = convertedDatatoJson['api_token'];
-      final urlnot =
-          "https://www.globtorch.com/api/notifications?api_token=$token";
-      http.Response responsenot =
-          await http.get(urlnot, headers: {"Accept": "application/json"});
-      var json = jsonDecode(responsenot.body);
-      print(json);
-      var notIn = json['num_unread_notifications'];
-      var notifinumber = notIn.toString();
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        setState(() {
-          visible = false;
-        });
-        prefs.setString('email', convertedDatatoJson['data']['email']);
-        prefs.setString('name', convertedDatatoJson['data']['name']);
-        prefs.setString('surname', convertedDatatoJson['data']['surname']);
-        prefs.setString('api_token', convertedDatatoJson['data']['api_token']);
+      if (isInternetOn) {
+        String url = 'https://globtorch.com/api/login';
+        final response = await http.post(url,
+            headers: {"Accept": "Application/json"},
+            body: {'school_id': username, 'password': password});
+        var convertedDatatoJson = jsonDecode(response.body);
+        var token = convertedDatatoJson['api_token'];
+        final urlnot =
+            "https://www.globtorch.com/api/notifications?api_token=$token";
+        http.Response responsenot =
+            await http.get(urlnot, headers: {"Accept": "application/json"});
+        var json = jsonDecode(responsenot.body);
+        print(json);
+        var notIn = json['num_unread_notifications'];
+        var notifinumber = notIn.toString();
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          setState(() {
+            visible = false;
+          });
+          prefs.setString('email', convertedDatatoJson['data']['email']);
+          prefs.setString('name', convertedDatatoJson['data']['name']);
+          prefs.setString('surname', convertedDatatoJson['data']['surname']);
+          prefs.setString(
+              'api_token', convertedDatatoJson['data']['api_token']);
 
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (BuildContext context) => HomePage(
-                      name: convertedDatatoJson['data']['name'],
-                      surname: convertedDatatoJson['data']['surname'],
-                      email: convertedDatatoJson['data']['email'],
-                      notific: notifinumber,
-                    )),
-            (Route<dynamic> route) => false);
-      } else if (response.statusCode == 400 || response.statusCode == 401) {
-        setState(() {
-          visible = false;
-        });
-        String mesg = convertedDatatoJson['message'].toString().trim();
-        String error = convertedDatatoJson['errors'].toString().trimLeft();
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: new Text(
-                '$mesg $error',
-                style: TextStyle(color: Colors.red),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) => LogIn()));
-                    Navigator.of(context).pop();
-                  },
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => HomePage(
+                        name: convertedDatatoJson['data']['name'],
+                        surname: convertedDatatoJson['data']['surname'],
+                        email: convertedDatatoJson['data']['email'],
+                        notific: notifinumber,
+                      )),
+              (Route<dynamic> route) => false);
+        } else if (response.statusCode == 400 || response.statusCode == 401) {
+          setState(() {
+            visible = false;
+          });
+          String mesg = convertedDatatoJson['message'].toString().trim();
+          String error = convertedDatatoJson['errors'].toString().trimLeft();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: new Text(
+                  '$mesg $error',
+                  style: TextStyle(color: Colors.red),
                 ),
-              ],
-            );
-          },
-        );
-//  final snackBar = SnackBar(
-//             content: Text(body['message'].toString().trim()),
-//         );
-//         _scaffoldKey.currentState.showSnackBar(snackBar);
-//     }
-//     setState(() {
-//         loading = false;
-//     });
-// });
+                actions: <Widget>[
+                  FlatButton(
+                    child: new Text("OK"),
+                    onPressed: () {
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => LogIn()));
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: new Text("Authentication Error"),
+                actions: <Widget>[
+                  FlatButton(
+                    child: new Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
       } else
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: new Text("Authentication Error"),
+              title: new Text("No internet connection"),
+              content: Text("Please turn on wifi or mobile data"),
               actions: <Widget>[
                 FlatButton(
                   child: new Text("OK"),

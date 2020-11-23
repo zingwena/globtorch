@@ -35,8 +35,14 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       title: 'Globtorch Mobile',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData(
+        textTheme: TextTheme(
+          bodyText1: TextStyle(),
+          bodyText2: TextStyle(),
+        ).apply(
+          displayColor: Colors.blue,
+          fontFamily: "Poppins",
+        ),
       ),
       home: SplashScreen(),
       debugShowCheckedModeBanner: false,

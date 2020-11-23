@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
@@ -36,14 +37,11 @@ class _AssignmentListState extends State<AssignmentList> {
   SharedPreferences prefs;
   var filename;
   var resultString;
-
-  static downloadingCallback(id, status, progress) {
-    ///Looking up for a send port
-    SendPort sendPort = IsolateNameServer.lookupPortByName("downloading");
-
-    ///ssending the data
-    sendPort.send([id, status, progress]);
-  }
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
 
   @override
   void initState() {
@@ -63,6 +61,28 @@ class _AssignmentListState extends State<AssignmentList> {
     // });
 
     FlutterDownloader.registerCallback(downloadingCallback);
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
+
+  static downloadingCallback(id, status, progress) {
+    ///Looking up for a send port
+    SendPort sendPort = IsolateNameServer.lookupPortByName("downloading");
+
+    ///ssending the data
+    sendPort.send([id, status, progress]);
   }
 
   void _openFileExplorer() async {
@@ -90,28 +110,44 @@ class _AssignmentListState extends State<AssignmentList> {
   }
 
   Future _uploadFile() async {
-    prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('api_token');
-    var filepath = prefs.getString('filepath');
-    int idAss = assgnmentD['id'];
-    final url =
-        "https://globtorch.com/api/assignments/$idAss/answer/upload?api_token=$token";
-    if (result != null) {
-      var postUri = Uri.parse(url);
-      http.MultipartRequest request =
-          new http.MultipartRequest("POST", postUri);
-      multipartFile =
-          await http.MultipartFile.fromPath('file_upload', filepath);
-      request.files.add(multipartFile);
-      http.StreamedResponse response = await request.send();
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        print(assgnmentD);
+    if (isInternetOn) {
+      prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('api_token');
+      var filepath = prefs.getString('filepath');
+      int idAss = assgnmentD['id'];
+      final url =
+          "https://globtorch.com/api/assignments/$idAss/answer/upload?api_token=$token";
+      if (result != null) {
+        var postUri = Uri.parse(url);
+        http.MultipartRequest request =
+            new http.MultipartRequest("POST", postUri);
+        multipartFile =
+            await http.MultipartFile.fromPath('file_upload', filepath);
+        request.files.add(multipartFile);
+        http.StreamedResponse response = await request.send();
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(assgnmentD);
+          showDialog(
+            context: context,
+            child: new AlertDialog(
+              title: Text("Successifully Uploaded an asignment"),
+              content: Text("Take on another assignment"),
+              actions: [
+                new FlatButton(
+                  child: const Text("Ok"),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
         showDialog(
           context: context,
           child: new AlertDialog(
-            title: Text("Successifully Uploaded an asignment"),
-            content: Text("Take on another assignment"),
+            title: Text("Nothing to upload"),
+            content: Text("Pick Assignment first"),
             actions: [
               new FlatButton(
                 child: const Text("Ok"),
@@ -124,16 +160,20 @@ class _AssignmentListState extends State<AssignmentList> {
     } else {
       showDialog(
         context: context,
-        child: new AlertDialog(
-          title: Text("Nothing to upload"),
-          content: Text("Pick Assignment first"),
-          actions: [
-            new FlatButton(
-              child: const Text("Ok"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("You are no longer connected to the internet"),
+            content: Text("Please turn on wifi or mobile data"),
+            actions: <Widget>[
+              FlatButton(
+                child: new Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
       );
     }
   }
@@ -210,40 +250,72 @@ class _AssignmentListState extends State<AssignmentList> {
                 child: RaisedButton.icon(
                   color: Colors.red,
                   onPressed: () async {
-                    final status = await Permission.storage.request();
-                    String path = assgnmentD['file_path'];
+                    if (isInternetOn) {
+                      final status = await Permission.storage.request();
+                      String path = assgnmentD['file_path'];
 
-                    int idAss = assgnmentD['id'];
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    var token = prefs.getString('api_token');
-                    if (status.isGranted) {
-                      final externalDir = await getExternalStorageDirectory();
+                      int idAss = assgnmentD['id'];
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+                      if (status.isGranted) {
+                        final externalDir = await getExternalStorageDirectory();
 
-                      final id = await FlutterDownloader.enqueue(
-                        url:
-                            "https://globtorch.com/api/assignments/$idAss/download?api_token=$token",
-                        savedDir: externalDir.path,
-                        fileName: "$path",
-                        showNotification: true,
-                        openFileFromNotification: true,
-                      );
+                        final id = await FlutterDownloader.enqueue(
+                          url:
+                              "https://globtorch.com/api/assignments/$idAss/download?api_token=$token",
+                          savedDir: externalDir.path,
+                          fileName: "$path",
+                          showNotification: true,
+                          openFileFromNotification: true,
+                        );
 
+                        showDialog(
+                          context: context,
+                          child: new AlertDialog(
+                            title: Text("Download In progress"),
+                            content: Text("Tap on Notifications"),
+                            actions: [
+                              new FlatButton(
+                                child: const Text("Ok"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          child: new AlertDialog(
+                            title: Text("No permission set!"),
+                            actions: [
+                              new FlatButton(
+                                child: const Text("Ok"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    } else {
                       showDialog(
                         context: context,
-                        child: new AlertDialog(
-                          title: Text("Download In progress"),
-                          content: Text("Tap on Notifications"),
-                          actions: [
-                            new FlatButton(
-                              child: const Text("Ok"),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
-                        ),
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       );
-                    } else {
-                      print("Permission deined");
                     }
                   },
                   icon: Text('Download'),

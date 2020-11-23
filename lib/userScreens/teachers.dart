@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/userScreens/rate_a_teacher.dart';
+import 'package:globtorch/userScreens/teacher_profile.dart';
 
 class MyTeachers extends StatefulWidget {
   final myteachers;
@@ -59,6 +62,13 @@ class _MyTeachersState extends State<MyTeachers> {
                               "${listteachers[index]["name"]} ${listteachers[index]["surname"]}",
                             ),
                             Separator(),
+                            Text(
+                              listteachers[index]['subjects'][0]['name'],
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.grey.shade600),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
@@ -67,7 +77,30 @@ class _MyTeachersState extends State<MyTeachers> {
                                       padding: const EdgeInsets.all(8.0),
                                       textColor: Colors.white,
                                       color: Colors.indigo[300],
-                                      onPressed: () async {},
+                                      onPressed: () async {
+                                        String teachername =
+                                            listteachers[index]['name'];
+                                        String teachersurname =
+                                            listteachers[index]['surname'];
+                                        String teacherphone =
+                                            listteachers[index]['phone'];
+                                        String teachergender =
+                                            listteachers[index]['gender'];
+                                        String teacheremail =
+                                            listteachers[index]['email'];
+
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (BuildContext
+                                                        context) =>
+                                                    TeacherProfile(
+                                                        name: teachername,
+                                                        surname: teachersurname,
+                                                        phone: teacherphone,
+                                                        email: teacheremail,
+                                                        gender:
+                                                            teachergender)));
+                                      },
                                       child: Text(
                                         "See Profile",
                                         style: TextStyle(
@@ -85,6 +118,10 @@ class _MyTeachersState extends State<MyTeachers> {
                                       color: Colors.indigo[300],
                                       onPressed: () async {
                                         int id = listteachers[index]['id'];
+                                        String name =
+                                            listteachers[index]['name'];
+                                        String surname =
+                                            listteachers[index]['surname'];
                                         String teacherId = id.toString();
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
@@ -92,7 +129,10 @@ class _MyTeachersState extends State<MyTeachers> {
                                                     (BuildContext context) =>
                                                         RateTeacher(
                                                             idofteacher:
-                                                                teacherId)));
+                                                                teacherId,
+                                                            teachername: name,
+                                                            teachersurname:
+                                                                surname)));
                                       },
                                       child: Text(
                                         "Rate Teacher",

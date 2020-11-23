@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
@@ -18,6 +19,28 @@ class ReportNavigation extends StatefulWidget {
 
 class _ReportNavigationState extends State<ReportNavigation> {
   final List listcourses;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   _ReportNavigationState({this.listcourses});
 
@@ -121,31 +144,55 @@ class _ReportNavigationState extends State<ReportNavigation> {
                                                 .getInstance();
                                         var token =
                                             prefs.getString('api_token');
-                                        final url =
-                                            "https://globtorch.com/api/courses/$courseIdString/results?api_token=$token";
-                                        http.Response response = await http
-                                            .get(url, headers: {
-                                          "Accept": "application/json"
-                                        });
-                                        var coursename =
-                                            listcourses[index]['name'];
-                                        var json = jsonDecode(response.body);
-                                        if (response.statusCode == 200) {
-                                          var reportChapters = json['chapters']
-                                              as Map<String, dynamic>;
-                                          var reportResults = json['results'];
-                                          //print(reportResults['percentage']);
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (BuildContext
-                                                          context) =>
-                                                      Reports(
-                                                          reportchapters:
-                                                              reportChapters,
-                                                          reportresults:
-                                                              reportResults,
-                                                          namecourse:
-                                                              coursename)));
+                                        if (isInternetOn) {
+                                          final url =
+                                              "https://globtorch.com/api/courses/$courseIdString/results?api_token=$token";
+                                          http.Response response = await http
+                                              .get(url, headers: {
+                                            "Accept": "application/json"
+                                          });
+                                          var coursename =
+                                              listcourses[index]['name'];
+                                          var json = jsonDecode(response.body);
+                                          if (response.statusCode == 200) {
+                                            var reportChapters =
+                                                json['chapters']
+                                                    as Map<String, dynamic>;
+                                            var reportResults = json['results'];
+                                            //print(reportResults['percentage']);
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        Reports(
+                                                            reportchapters:
+                                                                reportChapters,
+                                                            reportresults:
+                                                                reportResults,
+                                                            namecourse:
+                                                                coursename)));
+                                          }
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: new Text(
+                                                    "You are no longer connected to the internet"),
+                                                content: Text(
+                                                    "Please turn on wifi or mobile data"),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    child: new Text("OK"),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
                                         }
                                       },
                                       child: new Text(

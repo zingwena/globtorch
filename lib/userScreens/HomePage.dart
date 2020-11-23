@@ -1,21 +1,22 @@
-import 'dart:convert';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/services.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/chat/home_screen.dart';
 import 'package:globtorch/userScreens/coursereport.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
-import 'package:globtorch/userScreens/discussion/discussions.dart';
+import 'package:globtorch/userScreens/feedback.dart';
 import 'package:globtorch/userScreens/library.dart';
+import 'package:globtorch/userScreens/navigate_to_Discussions.dart';
 import 'package:globtorch/userScreens/notification.dart';
 import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:workmanager/workmanager.dart';
+import 'dart:convert';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -31,44 +32,6 @@ class HomePage extends StatefulWidget {
     this.email,
     this.notific,
   });
-
-  void showNotification(v, flp) async {
-    var android = AndroidNotificationDetails(
-        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-        priority: Priority.high, importance: Importance.max);
-    var iOS = IOSNotificationDetails();
-    var platform = NotificationDetails(android: android, iOS: iOS);
-    await flp.show(0, 'Virtual intelligent solution', '$v', platform,
-        payload: 'VIS \n $v');
-  }
-
-  Future callbackDispatcher() {
-    Workmanager.executeTask((task, inputData) async {
-      FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
-      var android = AndroidInitializationSettings('@mipmap/ic_launcher');
-      var iOS = IOSInitializationSettings();
-      var initSetttings = InitializationSettings(android: android, iOS: iOS);
-      flp.initialize(initSetttings);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('api_token');
-      if (token != null) {
-        var response = await http.get(
-            'https://www.globtorch.com/api/notifications?api_token=$token');
-        print("here================");
-        print(response);
-        var convert = json.decode(response.body);
-        if (convert['status'] == 200) {
-          showNotification(convert['title'], flp);
-        } else {
-          print("no messgae");
-        }
-      } else {
-        print("no token");
-      }
-
-      return Future.value(true);
-    });
-  }
 }
 
 class _HomePageState extends State<HomePage> {
@@ -77,14 +40,38 @@ class _HomePageState extends State<HomePage> {
   final String email;
   int _page = 0;
   String notificnumber;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _HomePageState({this.name, this.surname, this.email, this.notificnumber});
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-    //     .copyWith(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
+        .copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: GestureDetector(
@@ -109,16 +96,48 @@ class _HomePageState extends State<HomePage> {
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     var token = prefs.getString('api_token');
-                    final url =
-                        "https://www.globtorch.com/api/notifications?api_token=$token";
-                    http.Response response = await http
-                        .get(url, headers: {"Accept": "application/json"});
-                    var json = jsonDecode(response.body);
+                    if (isInternetOn) {
+                      final url =
+                          "https://www.globtorch.com/api/notifications?api_token=$token";
+                      http.Response response = await http
+                          .get(url, headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
 
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (BuildContext context) => Notifications(
-                              not: json['notifications'],
-                            )));
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (BuildContext context) => Notifications(
+                                not: json['notifications'],
+                              )));
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  var emaill = prefs.getString('email');
+                                  var namee = prefs.getString('name');
+                                  var surnamee = prefs.getString('surname');
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          HomePage(
+                                            name: namee,
+                                            surname: surnamee,
+                                            email: emaill,
+                                          )));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   }),
               Container(
                   child: notificnumber != null
@@ -172,7 +191,55 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () async {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+                      if (isInternetOn) {
+                        final url =
+                            "https://globtorch.com/api/users/courses?api_token=$token";
+                        http.Response response = await http
+                            .get(url, headers: {"Accept": "application/json"});
+                        var json = jsonDecode(response.body);
+                        List courselist = json;
+
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ListCourses(listcse: courselist)));
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                  "You are no longer connected to the internet"),
+                              content:
+                                  Text("Please turn on wifi or mobile data"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    var emaill = prefs.getString('email');
+                                    var namee = prefs.getString('name');
+                                    var surnamee = prefs.getString('surname');
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                HomePage(
+                                                  name: namee,
+                                                  surname: surnamee,
+                                                  email: emaill,
+                                                )));
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
                     child: Container(
                       height: 150,
                       width: 150,
@@ -196,7 +263,55 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () async {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+                      if (isInternetOn) {
+                        final url =
+                            "https://globtorch.com/api/users/courses?api_token=$token";
+                        http.Response response = await http
+                            .get(url, headers: {"Accept": "application/json"});
+                        var json = jsonDecode(response.body);
+                        List courselist = json;
+
+                        Navigator.of(context).push(CupertinoPageRoute(
+                            builder: (BuildContext context) =>
+                                CourseDiscussions(listcse: courselist)));
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                  "You are no longer connected to the internet"),
+                              content:
+                                  Text("Please turn on wifi or mobile data"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    var emaill = prefs.getString('email');
+                                    var namee = prefs.getString('name');
+                                    var surnamee = prefs.getString('surname');
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                HomePage(
+                                                  name: namee,
+                                                  surname: surnamee,
+                                                  email: emaill,
+                                                )));
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
                     child: Container(
                       height: 150,
                       width: 150,
@@ -233,7 +348,52 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+                    if (isInternetOn) {
+                      final url =
+                          "https://globtorch.com/api/users/courses?api_token=$token";
+                      http.Response response = await http
+                          .get(url, headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
+                      List courselist = json;
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ReportNavigation(listcse: courselist)));
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  var emaill = prefs.getString('email');
+                                  var namee = prefs.getString('name');
+                                  var surnamee = prefs.getString('surname');
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          HomePage(
+                                            name: namee,
+                                            surname: surnamee,
+                                            email: emaill,
+                                          )));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
                   child: Container(
                     height: 150,
                     width: 150,
@@ -245,7 +405,7 @@ class _HomePageState extends State<HomePage> {
                         children: <Widget>[
                           Icon(Icons.report, color: Colors.green, size: 70.0),
                           Text(
-                            "Reports",
+                            "Report",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green),
@@ -256,7 +416,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => Library()));
+                  },
                   child: Container(
                     height: 150,
                     width: 150,
@@ -309,7 +472,57 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+                    if (isInternetOn) {
+                      final discdetailUrl =
+                          "https://globtorch.com/api/chat_room?api_token=$token";
+                      http.Response response = await http.get(discdetailUrl,
+                          headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
+                      var chatroom = json['chatRooms'];
+                      var users = json['users'];
+
+                      //print(json);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => HomeScreen(
+                                  chtrom: chatroom, chatsusers: users)));
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text(
+                                "You are no longer connected to the internet"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  var emaill = prefs.getString('email');
+                                  var namee = prefs.getString('name');
+                                  var surnamee = prefs.getString('surname');
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          HomePage(
+                                            name: namee,
+                                            surname: surnamee,
+                                            email: emaill,
+                                          )));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
                   child: Container(
                     height: 150,
                     width: 150,
@@ -364,13 +577,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Home"),
                 onTap: () async {
-                  WidgetsFlutterBinding.ensureInitialized();
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   var emaill = prefs.getString('email');
                   var namee = prefs.getString('name');
                   var surnamee = prefs.getString('surname');
-                  Navigator.of(context).push(CupertinoPageRoute(
+                  Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) => HomePage(
                             name: namee,
                             surname: surnamee,
@@ -391,16 +603,37 @@ class _HomePageState extends State<HomePage> {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
-                  final url =
-                      "https://globtorch.com/api/users/courses?api_token=$token";
-                  http.Response response = await http
-                      .get(url, headers: {"Accept": "application/json"});
-                  var json = jsonDecode(response.body);
-                  List courselist = json;
+                  if (isInternetOn) {
+                    final url =
+                        "https://globtorch.com/api/users/courses?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    List courselist = json;
 
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          ListCourses(listcse: courselist)));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            ListCourses(listcse: courselist)));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: new Text(
+                              "You are no longer connected to the internet"),
+                          content: Text("Please turn on wifi or mobile data"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
               ListTile(
@@ -416,15 +649,36 @@ class _HomePageState extends State<HomePage> {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
-                  final url =
-                      "https://globtorch.com/api/teachers?api_token=$token";
-                  http.Response response = await http
-                      .get(url, headers: {"Accept": "application/json"});
-                  var json = jsonDecode(response.body);
-                  var listteachers = json['teachers'];
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          MyTeachers(myteachers: listteachers)));
+                  if (isInternetOn) {
+                    final url =
+                        "https://globtorch.com/api/teachers?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    var listteachers = json['teachers'];
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            MyTeachers(myteachers: listteachers)));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: new Text(
+                              "You are no longer connected to the internet"),
+                          content: Text("Please turn on wifi or mobile data"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
 
@@ -437,9 +691,41 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("Discussions"),
-                onTap: () {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (BuildContext context) => Discussions()));
+                onTap: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  if (isInternetOn) {
+                    final url =
+                        "https://globtorch.com/api/users/courses?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    List courselist = json;
+
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (BuildContext context) =>
+                            CourseDiscussions(listcse: courselist)));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: new Text(
+                              "You are no longer connected to the internet"),
+                          content: Text("Please turn on wifi or mobile data"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
               //  Divider(),
@@ -451,20 +737,41 @@ class _HomePageState extends State<HomePage> {
                     size: 20.0,
                   ),
                 ),
-                title: Text("Report"),
+                title: Text("Student Report"),
                 onTap: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
-                  final url =
-                      "https://globtorch.com/api/users/courses?api_token=$token";
-                  http.Response response = await http
-                      .get(url, headers: {"Accept": "application/json"});
-                  var json = jsonDecode(response.body);
-                  List courselist = json;
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          ReportNavigation(listcse: courselist)));
+                  if (isInternetOn) {
+                    final url =
+                        "https://globtorch.com/api/users/courses?api_token=$token";
+                    http.Response response = await http
+                        .get(url, headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    List courselist = json;
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            ReportNavigation(listcse: courselist)));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: new Text(
+                              "You are no longer connected to the internet"),
+                          content: Text("Please turn on wifi or mobile data"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
               ListTile(
@@ -476,7 +783,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("Feedback"),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => Feedbacks()));
+                },
               ),
               ListTile(
                 leading: CircleAvatar(
@@ -491,17 +801,6 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).push(CupertinoPageRoute(
                       builder: (BuildContext context) => Library()));
                 },
-              ),
-              ListTile(
-                leading: CircleAvatar(
-                  child: Icon(
-                    Icons.attach_money,
-                    color: Colors.white,
-                    size: 20.0,
-                  ),
-                ),
-                title: Text("Invite and Earn"),
-                onTap: () {},
               ),
 
               ListTile(
@@ -533,20 +832,41 @@ class _HomePageState extends State<HomePage> {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
-                  final discdetailUrl =
-                      "https://globtorch.com/api/chat_room?api_token=$token";
-                  http.Response response = await http.get(discdetailUrl,
-                      headers: {"Accept": "application/json"});
-                  var json = jsonDecode(response.body);
-                  var chatroom = json['chatRooms'];
-                  var users = json['users'];
+                  if (isInternetOn) {
+                    final discdetailUrl =
+                        "https://globtorch.com/api/chat_room?api_token=$token";
+                    http.Response response = await http.get(discdetailUrl,
+                        headers: {"Accept": "application/json"});
+                    var json = jsonDecode(response.body);
+                    var chatroom = json['chatRooms'];
+                    var users = json['users'];
 
-                  //print(json);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              HomeScreen(chtrom: chatroom, chatsusers: users)));
+                    //print(json);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => HomeScreen(
+                                chtrom: chatroom, chatsusers: users)));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: new Text(
+                              "You are no longer connected to the internet"),
+                          content: Text("Please turn on wifi or mobile data"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
               ListTile(
@@ -558,7 +878,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("Student Guide"),
-                onTap: () {},
+                onTap: () {
+                  _scaffoldKey.currentState.showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.white,
+                      content: Text(
+                        "The student Guide will be updated soon",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  );
+                },
               ),
               ListTile(
                 trailing: CircleAvatar(

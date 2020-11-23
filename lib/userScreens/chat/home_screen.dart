@@ -46,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: <Widget>[
-          //CategorySelector(),
           Expanded(
             child: Container(
               decoration: BoxDecoration(

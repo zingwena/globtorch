@@ -7,28 +7,55 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class RateTeacher extends StatefulWidget {
   final String idofteacher;
+  final String teachersurname;
+  final String teachername;
 
-  const RateTeacher({Key key, this.idofteacher}) : super(key: key);
+  const RateTeacher(
+      {Key key, this.idofteacher, this.teachersurname, this.teachername})
+      : super(key: key);
   @override
-  _RateTeacherState createState() => _RateTeacherState(teacherId: idofteacher);
+  _RateTeacherState createState() => _RateTeacherState(
+      teacherId: idofteacher, name: teachername, surname: teachersurname);
 }
 
 class _RateTeacherState extends State<RateTeacher> {
   final String teacherId;
+  final String name;
+  final String surname;
+
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController rateController = TextEditingController();
   var rating = 0.0;
 
-  _RateTeacherState({this.teacherId});
+  _RateTeacherState({this.name, this.surname, this.teacherId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text("Rate A teacher"),
-      ),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: AppBar(
+            backgroundColor: Colors.green[400],
+            flexibleSpace: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: Text("Rate",
+                                  style: TextStyle(
+                                      color: Color(0xff59595a),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)))),
+                      SizedBox(height: 10),
+                      Text("$name $surname")
+                    ])),
+            centerTitle: true,
+          )),
       body: Form(
         key: _formKey,
         child: ListView(

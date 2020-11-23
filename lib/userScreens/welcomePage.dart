@@ -1,7 +1,10 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/userScreens/loginpage.dart';
 import 'package:globtorch/userScreens/signup.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class WelcomePage extends StatefulWidget {
   @override
@@ -9,6 +12,30 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  var wifiBSSID;
+  var wifiIP;
+  var wifiName;
+  bool iswificonnected = false;
+  bool isInternetOn = true;
+  @override
+  void initState() {
+    super.initState();
+    getConnect(); // calls getconnect method to check which type if connection it
+  }
+
+  void getConnect() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetOn = false;
+      });
+    } else if (connectivityResult == ConnectivityResult.mobile) {
+      iswificonnected = false;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      iswificonnected = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,25 +124,56 @@ class _WelcomePageState extends State<WelcomePage> {
               padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 60.0),
               width: double.infinity,
               child: OutlineButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)),
-                color: Colors.white,
-                padding: const EdgeInsets.all(30.0),
-                child: Text(
-                  "SignUp",
-                  style: TextStyle(
-                      fontSize: 23,
-                      color: Colors.teal,
-                      fontWeight: FontWeight.w400),
-                ),
-                borderSide: BorderSide(
-                  color: Colors.teal, //Color of the border
-                  style: BorderStyle.solid, //Style of the border
-                  width: 3.0, //width of the border
-                ),
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SignUpPage())),
-              ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0)),
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(30.0),
+                  child: Text(
+                    "SignUp",
+                    style: TextStyle(
+                        fontSize: 23,
+                        color: Colors.teal,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  borderSide: BorderSide(
+                    color: Colors.teal, //Color of the border
+                    style: BorderStyle.solid, //Style of the border
+                    width: 3.0, //width of the border
+                  ),
+                  onPressed: () async {
+                    if (isInternetOn) {
+                      http.Response response = await http.get(
+                          "https://globtorch.com/api/courses",
+                          headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignUpPage(listc: json)));
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: new Text("No internet connection"),
+                            content: Text("Please turn on wifi or mobile data"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text("OK"),
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => WelcomePage()));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }),
             ),
             SizedBox(
               height: 15.0,
