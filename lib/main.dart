@@ -20,7 +20,7 @@ Future<void> main() async {
     debug: true,
   );
   WidgetsFlutterBinding.ensureInitialized();
-  await Workmanager.initialize(callbackDispatcher,
+  /*await Workmanager.initialize(callbackDispatcher,
       isInDebugMode:
           true); //to true if still in testing lev turn it to false whenever you are launching the app
   await Workmanager.registerPeriodicTask("5", simplePeriodicTask,
@@ -31,6 +31,7 @@ Future<void> main() async {
       constraints: Constraints(
         networkType: NetworkType.connected,
       ));
+      */
 
   runApp(
     MaterialApp(
@@ -51,7 +52,7 @@ Future<void> main() async {
   );
 }
 
-void showNotification(v, flp) async {
+/*void showNotification(v, flp) async {
   var android = AndroidNotificationDetails(
       'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
       priority: Priority.high, importance: Importance.max);
@@ -87,7 +88,7 @@ Future callbackDispatcher() {
 
     return Future.value(true);
   });
-}
+}*/
 
 class SplashScreen extends StatefulWidget {
   @override
