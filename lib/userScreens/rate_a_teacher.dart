@@ -107,8 +107,13 @@ class _RateTeacherState extends State<RateTeacher> {
                       }
                       return null;
                     },
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'OpenSans',
+                    ),
                     maxLines: 4,
-                    keyboardType: TextInputType.multiline,
+                    // keyboardType: TextInputType.multiline,
                     maxLength: 2000,
                     controller: rateController,
                     decoration: InputDecoration.collapsed(
@@ -120,8 +125,91 @@ class _RateTeacherState extends State<RateTeacher> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 15.0, left: 300.0, right: 10.0),
-              child: RaisedButton.icon(
+                padding: EdgeInsets.only(top: 5.0, left: 200.0, right: 0.0),
+                child: IconButton(
+                  icon: Icon(Icons.send),
+                  iconSize: 25.0,
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () async {
+                    if (_formKey.currentState.validate()) {
+                      String commentTeacher = rateController.text;
+                      int rate = rating.toInt();
+                      String ratings = rate.toString();
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+                      final Map<String, dynamic> data = {
+                        'comment': commentTeacher,
+                        'teacher_id': teacherId,
+                        'score': ratings
+                      };
+                      final url =
+                          "https://globtorch.com/api/ratings?api_token=$token";
+                      http.Response response = await http.post(url,
+                          headers: {"Accept": "application/json"}, body: data);
+                      var json = jsonDecode(response.body);
+                      print(json);
+                      rateController.clear();
+                      if (response.statusCode == 200) {
+                        _formKey.currentState.reset();
+                        Navigator.of(context).pop();
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                json['status'],
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                "Failed to rate a teacher",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                      /*  _scaffoldKey.currentState.showSnackBar(new SnackBar(
+                        content: new Text(
+                      'Successifully add a discussion!',
+                      style: TextStyle(color: Colors.green),
+                    )));
+                     Navigator.push(
+                        (context),
+                         MaterialPageRoute(
+                             builder: (BuildContext context) => Discussions(
+                                subname: subjectname,
+                                discussionlist: discusionlist,
+                                idsub: subId)));
+                                */
+                    }
+                  },
+                )
+                /* RaisedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     String commentTeacher = rateController.text;
@@ -206,8 +294,8 @@ class _RateTeacherState extends State<RateTeacher> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     side: BorderSide(color: Colors.green)),
-              ),
-            ),
+              ),*/
+                ),
           ],
         ),
       ),

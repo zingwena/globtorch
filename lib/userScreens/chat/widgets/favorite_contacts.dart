@@ -86,7 +86,7 @@ class FavoriteContacts extends StatelessWidget {
                         children: <Widget>[
                           CircleAvatar(
                             child: Icon(Icons.person),
-                            radius: 35.0,
+                            radius: 25.0,
                           ),
                           SizedBox(height: 6.0),
                           Text(

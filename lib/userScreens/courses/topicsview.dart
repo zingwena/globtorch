@@ -1,7 +1,12 @@
-import 'package:connectivity/connectivity.dart';
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
+import 'package:globtorch/userScreens/topicpdf.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,11 +29,33 @@ class _TopicViwState extends State<TopicViw> {
   var wifiName;
   bool iswificonnected = false;
   bool isInternetOn = true;
+  ReceivePort _receivePort = ReceivePort();
 
   @override
-  void initState() {
+  initState() {
     super.initState();
-    getConnect(); // calls getconnect method to check which type if connection it
+    getConnect();
+    IsolateNameServer.registerPortWithName(
+        _receivePort.sendPort, "downloading");
+
+    ///Listening for the data is comming other isolataes
+    // _receivePort.listen((message) {
+    //   setState(() {
+    //     progress = message[2];
+    //   });
+
+    //   //print(progress);
+    // });
+
+    FlutterDownloader.registerCallback(downloadingCallback);
+  }
+
+  static downloadingCallback(id, status, progress) {
+    ///Looking up for a send port
+    SendPort sendPort = IsolateNameServer.lookupPortByName("downloading");
+
+    ///ssending the data
+    sendPort.send([id, status, progress]);
   }
 
   void getConnect() async {
@@ -45,8 +72,8 @@ class _TopicViwState extends State<TopicViw> {
   }
 
   _TopicViwState({this.contentname, this.content});
-  PDFDocument _doc;
-  bool _loading;
+  bool _loading = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,14 +114,6 @@ class _TopicViwState extends State<TopicViw> {
                     blockSpacing: 14.0,
                   )),
                   ListTile(
-                    /* leading: new CircleAvatar(
-                      backgroundColor: Colors.red,
-                      child: new Icon(
-                        Icons.file_download,
-                        color: Colors.white,
-                        size: 20.0,
-                      ),
-                    ),*/
                     title: Container(
                       child: Container(
                         width: 10.0,
@@ -107,49 +126,41 @@ class _TopicViwState extends State<TopicViw> {
                             onPressed: () async {
                               final status = await Permission.storage.request();
                               if (isInternetOn) {
+                                print(contentname['topic']['contents']);
                                 if (status.isGranted) {
-                                  //print(contentname['topic']);
                                   for (var contentloop in contentname['topic']
                                       ['contents']) {
                                     if (contentloop['type'] == 'pdf') {
                                       var contentID = contentloop['id'];
+                                      print(contentID);
                                       String stringcontentID =
                                           contentID.toString();
-
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
 
                                       var token = prefs.getString('api_token');
                                       final url =
                                           "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
-
-                                      setState(() {
-                                        _loading = true;
-                                      });
-                                      final doc =
-                                          await PDFDocument.fromURL(url);
-                                      setState(() {
-                                        _doc = doc;
-                                        _loading = false;
-                                      });
-                                      Navigator.push(
-                                          context,
+                                      final filename = contentloop['name'];
+                                      final filepath = contentloop['path'];
+                                      final externalDir =
+                                          await getExternalStorageDirectory();
+                                      final id =
+                                          await FlutterDownloader.enqueue(
+                                        url:
+                                            "https://globtorch.com/api/contents/$stringcontentID?api_token=$token",
+                                        savedDir: externalDir.path,
+                                        fileName: "$filepath",
+                                        showNotification: true,
+                                        openFileFromNotification: true,
+                                      );
+                                      Navigator.of(context).push(
                                           MaterialPageRoute(
-                                              builder: (context) => _loading
-                                                  ? Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                      ),
-                                                    )
-                                                  : PDFViewer(
-                                                      document: _doc,
-                                                      indicatorBackground:
-                                                          Colors.red,
-                                                      showPicker: true,
-                                                      showIndicator: true,
-                                                    )));
+                                              builder: (BuildContext context) =>
+                                                  PDFTopic(
+                                                      name: filename,
+                                                      path: filepath,
+                                                      link: url)));
                                     }
                                   }
                                 } else {

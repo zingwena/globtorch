@@ -339,9 +339,12 @@ class _LogInState extends State<LogIn> {
         var notIn = json['num_unread_notifications'];
         var notifinumber = notIn.toString();
         if (response.statusCode == 200 || response.statusCode == 201) {
-          setState(() {
-            visible = false;
-          });
+          if (mounted) {
+            setState(() {
+              visible = false;
+            });
+          }
+
           prefs.setString('email', convertedDatatoJson['data']['email']);
           prefs.setString('name', convertedDatatoJson['data']['name']);
           prefs.setString('surname', convertedDatatoJson['data']['surname']);
@@ -358,9 +361,11 @@ class _LogInState extends State<LogIn> {
                       )),
               (Route<dynamic> route) => false);
         } else if (response.statusCode == 400 || response.statusCode == 401) {
-          setState(() {
-            visible = false;
-          });
+          if (mounted) {
+            setState(() {
+              visible = false;
+            });
+          }
           String mesg = convertedDatatoJson['message'].toString().trim();
           String error = convertedDatatoJson['errors'].toString().trimLeft();
           showDialog(

@@ -108,14 +108,10 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                 child: FlatButton(
                                   onPressed: () async {
                                     if (isInternetOn) {
-                                      setState(() {
-                                        visible = true;
-                                        isLoading = true;
-                                      });
-
                                       int id = coursetopics[index]['id'];
 
                                       String stringId = id.toString();
+                                      print(stringId);
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
                                       var token = prefs.getString('api_token');
@@ -136,7 +132,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                       if (response.statusCode == 200 ||
                                           response.statusCode == 201) {
                                         setState(() {
-                                          visible = false;
+                                          isLoading = false;
                                         });
                                         var tpccontentname =
                                             coursetopics[index]['name'];
@@ -144,16 +140,16 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    jsonConvert != null
-                                                        ? TopicViw(
-                                                            contentname:
-                                                                topicncontent,
-                                                            contentnaming:
-                                                                tpccontentname)
-                                                        : Center(
-                                                            child:
-                                                                CircularProgressIndicator())));
+                                                builder: (context) => jsonConvert ==
+                                                        null
+                                                    ? Center(
+                                                        child:
+                                                            CircularProgressIndicator())
+                                                    : TopicViw(
+                                                        contentname:
+                                                            topicncontent,
+                                                        contentnaming:
+                                                            tpccontentname)));
                                       } else if (response.statusCode == 401 ||
                                           response.statusCode == 403) {
                                         showDialog(

@@ -129,11 +129,10 @@ class _CourseDiscussionsState extends State<CourseDiscussions> {
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  new RaisedButton(
-                                      //padding: const EdgeInsets.all(8.0),
-                                      shape: new RoundedRectangleBorder(
+                                  RaisedButton(
+                                      shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              new BorderRadius.circular(15.0)),
+                                              BorderRadius.circular(15.0)),
                                       textColor: Colors.white,
                                       color: Colors.red,
                                       onPressed: () async {
@@ -170,13 +169,13 @@ class _CourseDiscussionsState extends State<CourseDiscussions> {
                                             context: context,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
-                                                title: new Text(
+                                                title: Text(
                                                     "You are no longer connected to the internet"),
                                                 content: Text(
                                                     "Please turn on wifi or mobile data"),
                                                 actions: <Widget>[
                                                   FlatButton(
-                                                    child: new Text("OK"),
+                                                    child: Text("OK"),
                                                     onPressed: () {
                                                       Navigator.of(context)
                                                           .pop();
@@ -188,7 +187,7 @@ class _CourseDiscussionsState extends State<CourseDiscussions> {
                                           );
                                         }
                                       },
-                                      child: new Text(
+                                      child: Text(
                                         "View Discussions",
                                         style: TextStyle(
                                             color: Colors.white,

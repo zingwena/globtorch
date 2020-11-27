@@ -217,34 +217,41 @@ class _AssignmentListState extends State<AssignmentList> {
       ),
       body: Container(
         margin: const EdgeInsets.only(top: 20.0),
-        child: Table(columnWidths: {
-          1: FractionColumnWidth(.3)
-        }, children: [
-          TableRow(
+        child: Wrap(children: [
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Time Send:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(assgnmentD['updated_at'])),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Due Date:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(assgnmentD['due_date'])),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Question:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: RaisedButton.icon(
@@ -324,11 +331,14 @@ class _AssignmentListState extends State<AssignmentList> {
               ),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Upload:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: RaisedButton.icon(
@@ -339,11 +349,14 @@ class _AssignmentListState extends State<AssignmentList> {
                   )),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("File:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: resultString != null
@@ -359,11 +372,14 @@ class _AssignmentListState extends State<AssignmentList> {
                         )),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Send:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: RaisedButton.icon(
@@ -375,11 +391,14 @@ class _AssignmentListState extends State<AssignmentList> {
               ),
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Mark %:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: assgnmentD['mark'] != null
@@ -393,11 +412,14 @@ class _AssignmentListState extends State<AssignmentList> {
                   )
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Marked Answer:")),
+              SizedBox(
+                width: 80.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: assgnmentD['marked_answer'] != null
@@ -418,11 +440,14 @@ class _AssignmentListState extends State<AssignmentList> {
                   )
             ],
           ),
-          TableRow(
+          Row(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Answer:")),
+              SizedBox(
+                width: 100.0,
+              ),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: resultString != null

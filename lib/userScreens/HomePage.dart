@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/chat/home_screen.dart';
@@ -17,6 +16,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
+import 'dart:async';
+import 'dart:math';
+import 'package:connectivity/connectivity.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -41,28 +44,29 @@ class _HomePageState extends State<HomePage> {
   int _page = 0;
   String notificnumber;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Random _random = new Random();
+  Color _color;
 
   _HomePageState({this.name, this.surname, this.email, this.notificnumber});
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  StreamSubscription<DataConnectionStatus> listener;
+  bool isDeviceConnected = false;
+
   @override
   void initState() {
     super.initState();
-    getConnect(); // calls getconnect method to check which type if connection it
+    getConnect();
+  }
+
+  @override
+  void dispose() {
+    listener.cancel();
+    super.dispose();
   }
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -93,17 +97,17 @@ class _HomePageState extends State<HomePage> {
                     size: 30,
                   ),
                   onPressed: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    var token = prefs.getString('api_token');
-                    if (isInternetOn) {
+                    if (isDeviceConnected) {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
                       final url =
                           "https://www.globtorch.com/api/notifications?api_token=$token";
                       http.Response response = await http
                           .get(url, headers: {"Accept": "application/json"});
                       var json = jsonDecode(response.body);
-
-                      Navigator.of(context).push(CupertinoPageRoute(
+                      print(notificnumber);
+                      Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) => Notifications(
                                 not: json['notifications'],
                               )));
@@ -124,6 +128,7 @@ class _HomePageState extends State<HomePage> {
                                   var emaill = prefs.getString('email');
                                   var namee = prefs.getString('name');
                                   var surnamee = prefs.getString('surname');
+                                  print(notificnumber);
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (BuildContext context) =>
                                           HomePage(
@@ -142,7 +147,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                   child: notificnumber != null
                       ? CircleAvatar(
-                          radius: 8.0,
+                          radius: 10.0,
                           backgroundColor: Colors.red,
                           child: Text(
                             notificnumber,
@@ -192,10 +197,15 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      var token = prefs.getString('api_token');
-                      if (isInternetOn) {
+                      setState(() {
+                        _color = new Color.fromRGBO(_random.nextInt(256),
+                            _random.nextInt(256), _random.nextInt(256), 1.0);
+                      });
+                      if (isDeviceConnected) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        var token = prefs.getString('api_token');
+
                         final url =
                             "https://globtorch.com/api/users/courses?api_token=$token";
                         http.Response response = await http
@@ -224,14 +234,7 @@ class _HomePageState extends State<HomePage> {
                                     var emaill = prefs.getString('email');
                                     var namee = prefs.getString('name');
                                     var surnamee = prefs.getString('surname');
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                HomePage(
-                                                  name: namee,
-                                                  surname: surnamee,
-                                                  email: emaill,
-                                                )));
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                               ],
@@ -241,6 +244,7 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     child: Container(
+                      color: _color,
                       height: 150,
                       width: 150,
                       child: Card(
@@ -264,10 +268,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      var token = prefs.getString('api_token');
-                      if (isInternetOn) {
+                      setState(() {
+                        _color = new Color.fromRGBO(_random.nextInt(256),
+                            _random.nextInt(256), _random.nextInt(256), 1.0);
+                      });
+                      if (isDeviceConnected) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        var token = prefs.getString('api_token');
+
                         final url =
                             "https://globtorch.com/api/users/courses?api_token=$token";
                         http.Response response = await http
@@ -313,6 +322,7 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     child: Container(
+                      color: _color,
                       height: 150,
                       width: 150,
                       child: Card(
@@ -349,10 +359,15 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    var token = prefs.getString('api_token');
-                    if (isInternetOn) {
+                    setState(() {
+                      _color = new Color.fromRGBO(_random.nextInt(256),
+                          _random.nextInt(256), _random.nextInt(256), 1.0);
+                    });
+                    if (isDeviceConnected) {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+
                       final url =
                           "https://globtorch.com/api/users/courses?api_token=$token";
                       http.Response response = await http
@@ -395,6 +410,7 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                   child: Container(
+                    color: _color,
                     height: 150,
                     width: 150,
                     child: Card(
@@ -417,10 +433,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    setState(() {
+                      _color = new Color.fromRGBO(_random.nextInt(256),
+                          _random.nextInt(256), _random.nextInt(256), 1.0);
+                    });
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (BuildContext context) => Library()));
                   },
                   child: Container(
+                    color: _color,
                     height: 150,
                     width: 150,
                     child: Card(
@@ -444,13 +465,22 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
+            SizedBox(
+              height: 20.0,
+            ),
             //third Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    setState(() {
+                      _color = new Color.fromRGBO(_random.nextInt(256),
+                          _random.nextInt(256), _random.nextInt(256), 1.0);
+                    });
+                  },
                   child: Container(
+                    color: _color,
                     height: 150,
                     width: 150,
                     child: Card(
@@ -473,10 +503,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    var token = prefs.getString('api_token');
-                    if (isInternetOn) {
+                    setState(() {
+                      _color = new Color.fromRGBO(_random.nextInt(256),
+                          _random.nextInt(256), _random.nextInt(256), 1.0);
+                    });
+                    if (isDeviceConnected) {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      var token = prefs.getString('api_token');
+
                       final discdetailUrl =
                           "https://globtorch.com/api/chat_room?api_token=$token";
                       http.Response response = await http.get(discdetailUrl,
@@ -524,6 +559,7 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                   child: Container(
+                    color: _color,
                     height: 150,
                     width: 150,
                     child: Card(
@@ -599,11 +635,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 title: Text("My Courses"),
+                hoverColor: Colors.lightBlueAccent,
                 onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+
                     final url =
                         "https://globtorch.com/api/users/courses?api_token=$token";
                     http.Response response = await http
@@ -637,6 +675,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
+                enabled: true,
                 leading: CircleAvatar(
                   child: Icon(
                     Icons.assessment,
@@ -646,10 +685,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("My Teachers"),
                 onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+
                     final url =
                         "https://globtorch.com/api/teachers?api_token=$token";
                     http.Response response = await http
@@ -692,10 +732,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Discussions"),
                 onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+
                     final url =
                         "https://globtorch.com/api/users/courses?api_token=$token";
                     http.Response response = await http
@@ -739,10 +780,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Student Report"),
                 onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+
                     final url =
                         "https://globtorch.com/api/users/courses?api_token=$token";
                     http.Response response = await http
@@ -829,10 +871,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Chart"),
                 onTap: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  var token = prefs.getString('api_token');
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('api_token');
+
                     final discdetailUrl =
                         "https://globtorch.com/api/chat_room?api_token=$token";
                     http.Response response = await http.get(discdetailUrl,

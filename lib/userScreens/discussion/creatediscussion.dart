@@ -88,7 +88,11 @@ class _AddDiscussionState extends State<AddDiscussion> {
                       return null;
                     },
                     maxLines: 2,
-                    keyboardType: TextInputType.multiline,
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'OpenSans',
+                    ),
                     controller: titleController,
                     decoration: InputDecoration.collapsed(
                         border: OutlineInputBorder(
@@ -119,8 +123,13 @@ class _AddDiscussionState extends State<AddDiscussion> {
                       }
                       return null;
                     },
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'OpenSans',
+                    ),
                     maxLines: 4,
-                    keyboardType: TextInputType.multiline,
+                    // keyboardType: TextInputType.multiline,
                     maxLength: 2000,
                     controller: discussionController,
                     decoration: InputDecoration.collapsed(
@@ -132,8 +141,93 @@ class _AddDiscussionState extends State<AddDiscussion> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 15.0, left: 300.0, right: 10.0),
-              child: RaisedButton.icon(
+                padding: EdgeInsets.only(top: 15.0, left: 200.0, right: 10.0),
+                child: IconButton(
+                    icon: Icon(Icons.send),
+                    iconSize: 25.0,
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () async {
+                      if (_formKey.currentState.validate()) {
+                        String title = titleController.text;
+                        String discussion = discussionController.text;
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        var token = prefs.getString('api_token');
+                        if (isInternetOn) {
+                          final url =
+                              "https://globtorch.com/api/subjects/$subId/discussions?api_token=$token";
+                          http.Response response = await http.post(url,
+                              headers: {"Accept": "application/json"},
+                              body: {'title': title, 'body': discussion});
+                          var json = jsonDecode(response.body);
+                          // print(json);
+                          if (response.statusCode == 200) {
+                            _formKey.currentState.reset();
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: new Text(
+                                    "${json['message']} \n Your discusion will be updated shortly",
+                                    style: TextStyle(color: Colors.green),
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: new Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: new Text(
+                                    "Failed to create a discussion",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: new Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: new Text(
+                                    "You are no longer connected to the internet"),
+                                content:
+                                    Text("Please turn on wifi or mobile data"),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: new Text("OK"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      }
+                    })
+                /* RaisedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     String title = titleController.text;
@@ -192,19 +286,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
                           },
                         );
                       }
-                      /*  _scaffoldKey.currentState.showSnackBar(new SnackBar(
-                        content: new Text(
-                      'Successifully add a discussion!',
-                      style: TextStyle(color: Colors.green),
-                    )));
-                     Navigator.push(
-                        (context),
-                         MaterialPageRoute(
-                             builder: (BuildContext context) => Discussions(
-                                subname: subjectname,
-                                discussionlist: discusionlist,
-                                idsub: subId)));
-                                */
+                    
                     } else {
                       showDialog(
                         context: context,
@@ -233,8 +315,8 @@ class _AddDiscussionState extends State<AddDiscussion> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     side: BorderSide(color: Colors.green)),
-              ),
-            ),
+              ),*/
+                ),
           ],
         ),
       ),

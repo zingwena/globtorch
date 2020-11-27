@@ -63,7 +63,6 @@ class RecentChats extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                     decoration: BoxDecoration(
-                      //color: chat. ? Color(0xFFFFEFEE) :
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20.0),
@@ -76,7 +75,7 @@ class RecentChats extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             CircleAvatar(
-                              radius: 35.0,
+                              radius: 25.0,
                               child: Icon(Icons.person),
                             ),
                             SizedBox(width: 10.0),
@@ -84,7 +83,7 @@ class RecentChats extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  chat['name'],
+                                  "${chat['name'][1].toUpperCase()}. ${chat['surname']}",
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 15.0,
@@ -97,11 +96,10 @@ class RecentChats extends StatelessWidget {
                                       MediaQuery.of(context).size.width * 0.45,
                                   child: Text(
                                     "",
-                                    //chat.text,
                                     style: TextStyle(
                                       color: Colors.blueGrey,
                                       fontSize: 15.0,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -122,26 +120,6 @@ class RecentChats extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 5.0),
-                            /*  chat.
-                              ? Container(
-                                  width: 40.0,
-                                  height: 20.0,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'NEW',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              : Text(''),
-                              */
                           ],
                         ),
                       ],

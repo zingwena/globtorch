@@ -73,11 +73,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
                 SizedBox(
                   width: 200.0,
                 ),
-                Text(teachername,
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade600)),
+                Expanded(
+                  child: Text(teachername,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade600)),
+                ),
               ],
             ),
             SizedBox(
@@ -93,11 +95,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
                 SizedBox(
                   width: 200.0,
                 ),
-                Text(teachersurname,
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade600)),
+                Expanded(
+                  child: Text(teachersurname,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade600)),
+                ),
               ],
             ),
             SizedBox(
@@ -113,11 +117,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
                 SizedBox(
                   width: 200.0,
                 ),
-                Text(teachergender,
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade600)),
+                Expanded(
+                  child: Text(teachergender,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade600)),
+                ),
               ],
             ),
             SizedBox(
@@ -133,11 +139,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
                 SizedBox(
                   width: 100.0,
                 ),
-                Text(teacheremail,
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade600)),
+                Expanded(
+                  child: Text(teacheremail,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey.shade600)),
+                ),
               ],
             ),
             SizedBox(
@@ -153,11 +161,13 @@ class _TeacherProfileState extends State<TeacherProfile> {
                 SizedBox(
                   width: 200.0,
                 ),
-                Text(teacherphone,
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.grey.shade600)),
+                Expanded(
+                  child: Text(teacherphone,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.grey.shade600)),
+                ),
               ],
             )
           ],

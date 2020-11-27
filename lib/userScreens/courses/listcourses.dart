@@ -125,73 +125,72 @@ class _ListCoursesState extends State<ListCourses> {
                                   color: Colors.black),
                             ),
                             Separator(),
-                            Row(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Expanded(
-                                  child: RaisedButton(
-                                      padding: const EdgeInsets.all(8.0),
-                                      textColor: Colors.white,
-                                      color: Colors.red,
-                                      onPressed: () async {
-                                        if (isInternetOn) {
-                                          int id = listcourses[index]['id'];
-                                          String stringId = id.toString();
-                                          String url =
-                                              "https://globtorch.com/api/courses";
-                                          String fullUrl = '$url/$stringId';
-                                          String listcoursesname =
-                                              listcourses[index]['name'];
+                                RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0)),
+                                    textColor: Colors.white,
+                                    color: Colors.red,
+                                    onPressed: () async {
+                                      if (isInternetOn) {
+                                        int id = listcourses[index]['id'];
+                                        String stringId = id.toString();
+                                        String url =
+                                            "https://globtorch.com/api/courses";
+                                        String fullUrl = '$url/$stringId';
+                                        String listcoursesname =
+                                            listcourses[index]['name'];
 
-                                          http.Response response = await http
-                                              .get(fullUrl, headers: {
-                                            "Accept": "application/json"
-                                          });
-                                          var jsonConvert =
-                                              jsonDecode(response.body);
-                                          List coursesub =
-                                              jsonConvert['subjects'];
+                                        http.Response response = await http
+                                            .get(fullUrl, headers: {
+                                          "Accept": "application/json"
+                                        });
+                                        var jsonConvert =
+                                            jsonDecode(response.body);
+                                        List coursesub =
+                                            jsonConvert['subjects'];
 
-                                          Navigator.of(context).push(
-                                              CupertinoPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          ListSubjects(
-                                                            coursesubjects:
-                                                                coursesub,
-                                                            coursename:
-                                                                listcoursesname,
-                                                          )));
-                                        } else {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: new Text(
-                                                    "You are no longer connected to the internet"),
-                                                content: Text(
-                                                    "Please turn on wifi or mobile data"),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    child: new Text("OK"),
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "View Course",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      )),
-                                ),
+                                        Navigator.of(context).push(
+                                            CupertinoPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        ListSubjects(
+                                                          coursesubjects:
+                                                              coursesub,
+                                                          coursename:
+                                                              listcoursesname,
+                                                        )));
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: new Text(
+                                                  "You are no longer connected to the internet"),
+                                              content: Text(
+                                                  "Please turn on wifi or mobile data"),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  child: new Text("OK"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Text(
+                                      "View Course",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )),
                                 Container(
                                   width: 30.0,
                                 ),

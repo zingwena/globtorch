@@ -36,6 +36,7 @@ Future<void> main() async {
     MaterialApp(
       title: 'Globtorch Mobile',
       theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: TextTheme(
           bodyText1: TextStyle(),
           bodyText2: TextStyle(),

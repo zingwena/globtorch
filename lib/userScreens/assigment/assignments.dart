@@ -101,17 +101,6 @@ class _AssignmentsState extends State<Assignments> {
                               "${listasignmntss[index]['name']}",
                               style: TextStyle(color: Colors.blue[600]),
                             ),
-                            trailing: Column(
-                              children: <Widget>[
-                                Icon(Icons.date_range),
-                                Text("Due Date"),
-                                Expanded(
-                                  child: Text(
-                                      "${listasignmntss[index]['due_date']}",
-                                      style: TextStyle(color: Colors.red)),
-                                ),
-                              ],
-                            ),
                             onTap: () async {
                               if (isInternetOn) {
                                 int assignmentId = listasignmntss[index]['id'];

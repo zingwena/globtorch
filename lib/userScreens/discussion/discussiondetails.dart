@@ -181,37 +181,45 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
         child: isInternetOn
             ? Column(
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Title:",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15.0),
-                      ),
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      Text(
-                        discussiondetails['title'],
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15.0),
-                      ),
-                    ],
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        Text(
+                          "Title:",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Text(
+                          discussiondetails['title'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    discussiondetails['body'],
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Comments:",
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),
+                  Expanded(
+                      flex: 4,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Text(
+                              discussiondetails['body'],
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Comments:",
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ],
+                        ),
+                      )),
                   Expanded(
                     child: ListView.builder(
                       itemCount: listcomentss == null ? 0 : listcomentss.length,
