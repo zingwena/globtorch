@@ -28,7 +28,7 @@ android {
     compileSdkVersion 28
 
     lintOptions {
-        checkReleaseBuilds false
+        //checkReleaseBuilds false
         disable 'InvalidPackage'
     }
 
