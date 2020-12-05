@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:globtorch/userScreens/courses/chaptertest.dart';
 import 'package:globtorch/userScreens/courses/topicsview.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -11,18 +12,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ListTopicsContent extends StatefulWidget {
   @override
-  _ListTopicsContentState createState() =>
-      _ListTopicsContentState(coursetopics: coursetopics, tpname: tpcname);
+  _ListTopicsContentState createState() => _ListTopicsContentState(
+      coursetopics: coursetopics, tpname: tpcname, chapterId: idChapter);
   final List coursetopics;
   final String title;
   final String tpcname;
-  ListTopicsContent({this.coursetopics, this.title, this.tpcname});
+  final String idChapter;
+  ListTopicsContent(
+      {this.coursetopics, this.title, this.tpcname, this.idChapter});
 }
 
 class _ListTopicsContentState extends State<ListTopicsContent> {
   final List coursetopics;
   final String tpname;
-  _ListTopicsContentState({this.coursetopics, this.tpname});
+  final String chapterId;
+  _ListTopicsContentState({this.coursetopics, this.tpname, this.chapterId});
   bool visible = false;
   bool isLoading = true;
   String localPath;
@@ -94,10 +98,10 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                 "${coursetopics[index]['name']}",
                                 style: Style.headerTextStyle,
                               ),
-                              leading: new CircleAvatar(
+                              leading: CircleAvatar(
                                 backgroundColor:
                                     Color.fromRGBO(161, 108, 164, 1.0),
-                                child: new Icon(
+                                child: Icon(
                                   Icons.library_books,
                                   color: Colors.white,
                                   size: 20.0,
@@ -111,7 +115,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                       int id = coursetopics[index]['id'];
 
                                       String stringId = id.toString();
-                                      print(stringId);
+
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
                                       var token = prefs.getString('api_token');
@@ -156,14 +160,14 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: new Text(
+                                              title: Text(
                                                 "$topicncontent",
                                                 style: TextStyle(
                                                     color: prefix0.Colors.red),
                                               ),
                                               actions: <Widget>[
                                                 FlatButton(
-                                                  child: new Text("OK"),
+                                                  child: Text("OK"),
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
@@ -177,14 +181,14 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: new Text(
+                                              title: Text(
                                                 "Failed",
                                                 style: TextStyle(
                                                     color: prefix0.Colors.red),
                                               ),
                                               actions: <Widget>[
                                                 FlatButton(
-                                                  child: new Text("OK"),
+                                                  child: Text("OK"),
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
@@ -199,13 +203,13 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: new Text(
+                                            title: Text(
                                                 "You are no longer connected to the internet"),
                                             content: Text(
                                                 "Please turn on wifi or mobile data"),
                                             actions: <Widget>[
                                               FlatButton(
-                                                child: new Text("OK"),
+                                                child: Text("OK"),
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
@@ -218,9 +222,9 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                   },
                                   child: const Text('View Content'),
                                   color: Color.fromRGBO(161, 108, 164, 1.0),
-                                  shape: new RoundedRectangleBorder(
+                                  shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          new BorderRadius.circular(30.0)),
+                                          BorderRadius.circular(30.0)),
                                   textColor: Colors.white,
                                 ),
                               ),
@@ -230,13 +234,39 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                   Icon(Icons.assignment_ind),
                                   Expanded(
                                     child: FlatButton(
-                                        onPressed: () async {},
+                                        onPressed: () async {
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          var token =
+                                              prefs.getString('api_token');
+                                          String url =
+                                              "https://globtorch.com/api/chapters/$chapterId/answers/create?api_token=$token";
+                                          http.Response response =
+                                              await http.get(
+                                            url,
+                                            headers: {
+                                              "Accept": "application/json"
+                                            },
+                                          );
+                                          var jsonConvert =
+                                              jsonDecode(response.body);
+                                          List questions =
+                                              jsonConvert['chapter']
+                                                  ['questions'];
+                                          Navigator.of(context).push(
+                                              CupertinoPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          TestChapters(
+                                                              testquestions:
+                                                                  questions)));
+                                        },
                                         child: Text("Test"),
                                         color: Colors.red,
-                                        shape: new RoundedRectangleBorder(
+                                        shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                new BorderRadius.circular(
-                                                    30.0))),
+                                                BorderRadius.circular(30.0))),
                                   ),
                                 ],
                               ),

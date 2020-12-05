@@ -96,6 +96,8 @@ class _ListChaptersState extends State<ListChapters> {
                                     new EdgeInsets.symmetric(horizontal: 50.0),
                                 child: FlatButton(
                                   onPressed: () {
+                                    int id = coursechapterss[index]['id'];
+                                    String stringId = id.toString();
                                     var topicname =
                                         coursechapterss[index]['name'];
                                     List coursetopics =
@@ -104,8 +106,10 @@ class _ListChaptersState extends State<ListChapters> {
                                         new CupertinoPageRoute(
                                             builder: (BuildContext context) =>
                                                 new ListTopicsContent(
-                                                    coursetopics: coursetopics,
-                                                    tpcname: topicname)));
+                                                  coursetopics: coursetopics,
+                                                  tpcname: topicname,
+                                                  idChapter: stringId,
+                                                )));
                                   },
                                   child: const Text(
                                     'View Topics',
@@ -118,13 +122,14 @@ class _ListChaptersState extends State<ListChapters> {
                                 )),
                             dense: true,
                             onTap: () {
+                              var topicname = coursechapterss[index]['name'];
                               List coursetopics =
                                   coursechapterss[index]['topics'];
                               Navigator.of(context).push(new CupertinoPageRoute(
                                   builder: (BuildContext context) =>
                                       new ListTopicsContent(
-                                        coursetopics: coursetopics,
-                                      )));
+                                          coursetopics: coursetopics,
+                                          tpcname: topicname)));
                             },
                           ),
                         ),
