@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/userScreens/discussion/creatediscussion.dart';
 import 'package:globtorch/userScreens/discussion/discussiondetails.dart';
@@ -23,11 +24,7 @@ class _DiscussionsState extends State<Discussions> {
   final List listdiscussion;
   final int subId;
   _DiscussionsState({this.subjctnamedis, this.listdiscussion, this.subId});
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -37,14 +34,8 @@ class _DiscussionsState extends State<Discussions> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -99,7 +90,7 @@ class _DiscussionsState extends State<Discussions> {
                     children: [
                       SingleChildScrollView(
                         child: Card(
-                            child: isInternetOn
+                            child: isDeviceConnected
                                 ? ListTile(
                                     title: Text(
                                       listdiscussion[index]['title'],

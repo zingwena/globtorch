@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:link/link.dart';
 
@@ -9,10 +10,8 @@ class Library extends StatefulWidget {
 }
 
 class _LibraryState extends State<Library> {
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
+
   @override
   void initState() {
     super.initState();
@@ -21,14 +20,8 @@ class _LibraryState extends State<Library> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -44,7 +37,7 @@ class _LibraryState extends State<Library> {
           padding: const EdgeInsets.all(8),
           children: <Widget>[
             Card(
-              child: isInternetOn
+              child: isDeviceConnected
                   ? Column(
                       children: [
                         Container(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,12 +34,7 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
   SharedPreferences prefs;
   var filename;
   var resultString;
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
-
+  bool isDeviceConnected = false;
   @override
   void initState() {
     super.initState();
@@ -63,14 +59,8 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -107,7 +97,7 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
   }
 
   Future _uploadFile() async {
-    if (isInternetOn) {
+    if (isDeviceConnected) {
       prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('api_token');
       var filepath = prefs.getString('filepath');
@@ -256,7 +246,7 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
               RaisedButton.icon(
                 color: Colors.red,
                 onPressed: () async {
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
                     final status = await Permission.storage.request();
                     String path = assgnmentD['file_path'];
 

@@ -1,3 +1,4 @@
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
@@ -16,10 +17,8 @@ class Notifications extends StatefulWidget {
 class _NotificationsState extends State<Notifications> {
   final List notific;
   _NotificationsState({this.notific});
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,14 +27,8 @@ class _NotificationsState extends State<Notifications> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -69,7 +62,7 @@ class _NotificationsState extends State<Notifications> {
                     children: [
                       SingleChildScrollView(
                         child: Card(
-                          child: isInternetOn
+                          child: isDeviceConnected
                               ? ListTile(
                                   title: Text(notific[index]['title']),
                                   onTap: () async {

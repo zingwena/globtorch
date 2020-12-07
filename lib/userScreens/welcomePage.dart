@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/userScreens/loginpage.dart';
 import 'package:globtorch/userScreens/signup.dart';
@@ -12,11 +13,8 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,14 +23,8 @@ class _WelcomePageState extends State<WelcomePage> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -141,7 +133,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     width: 3.0, //width of the border
                   ),
                   onPressed: () async {
-                    if (isInternetOn) {
+                    if (isDeviceConnected) {
                       http.Response response = await http.get(
                           "https://globtorch.com/api/courses",
                           headers: {"Accept": "application/json"});

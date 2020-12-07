@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -26,11 +27,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
   _AddDiscussionState({this.discusionlist, this.subjectname, this.subId});
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -40,14 +37,8 @@ class _AddDiscussionState extends State<AddDiscussion> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -153,7 +144,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         var token = prefs.getString('api_token');
-                        if (isInternetOn) {
+                        if (isDeviceConnected) {
                           final url =
                               "https://globtorch.com/api/subjects/$subId/discussions?api_token=$token";
                           http.Response response = await http.post(url,
@@ -235,7 +226,7 @@ class _AddDiscussionState extends State<AddDiscussion> {
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     var token = prefs.getString('api_token');
-                    if (isInternetOn) {
+                    if (isDeviceConnected) {
                       final url =
                           "https://globtorch.com/api/subjects/$subId/discussions?api_token=$token";
                       http.Response response = await http.post(url,

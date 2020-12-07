@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:globtorch/userScreens/courses/chaptertest.dart';
 import 'package:globtorch/userScreens/courses/topicsview.dart';
@@ -30,11 +31,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
   bool visible = false;
   bool isLoading = true;
   String localPath;
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -44,14 +41,8 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -111,7 +102,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                 width: 10.0,
                                 child: FlatButton(
                                   onPressed: () async {
-                                    if (isInternetOn) {
+                                    if (isDeviceConnected) {
                                       int id = coursetopics[index]['id'];
 
                                       String stringId = id.toString();

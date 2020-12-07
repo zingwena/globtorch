@@ -1,4 +1,5 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -39,11 +40,7 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
   final GlobalKey<ScaffoldState> scafoldState = GlobalKey<ScaffoldState>();
 
   final _formKey = GlobalKey<FormState>();
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -53,14 +50,8 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -102,7 +93,7 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
                       await SharedPreferences.getInstance();
                   var token = prefs.getString('api_token');
                   String comment = _commentController.text;
-                  if (isInternetOn) {
+                  if (isDeviceConnected) {
                     String url =
                         'https://globtorch.com/api/discussions/$discId/comment?api_token=$token';
                     final response = await http.post(url,
@@ -178,7 +169,7 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
           )),
       body: Form(
         key: _formKey,
-        child: isInternetOn
+        child: isDeviceConnected
             ? Column(
                 children: [
                   Expanded(

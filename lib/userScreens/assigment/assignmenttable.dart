@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
@@ -37,11 +38,7 @@ class _AssignmentListState extends State<AssignmentList> {
   SharedPreferences prefs;
   var filename;
   var resultString;
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -66,14 +63,8 @@ class _AssignmentListState extends State<AssignmentList> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -110,7 +101,7 @@ class _AssignmentListState extends State<AssignmentList> {
   }
 
   Future _uploadFile() async {
-    if (isInternetOn) {
+    if (isDeviceConnected) {
       prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('api_token');
       var filepath = prefs.getString('filepath');
@@ -257,7 +248,7 @@ class _AssignmentListState extends State<AssignmentList> {
                 child: RaisedButton.icon(
                   color: Colors.red,
                   onPressed: () async {
-                    if (isInternetOn) {
+                    if (isDeviceConnected) {
                       final status = await Permission.storage.request();
                       String path = assgnmentD['file_path'];
 

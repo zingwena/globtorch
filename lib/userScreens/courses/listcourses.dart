@@ -1,4 +1,5 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/animation.dart';
@@ -20,11 +21,7 @@ class _ListCoursesState extends State<ListCourses> {
   final List listcourses;
 
   _ListCoursesState({this.listcourses});
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -34,14 +31,8 @@ class _ListCoursesState extends State<ListCourses> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -135,7 +126,7 @@ class _ListCoursesState extends State<ListCourses> {
                                     textColor: Colors.white,
                                     color: Colors.red,
                                     onPressed: () async {
-                                      if (isInternetOn) {
+                                      if (isDeviceConnected) {
                                         int id = listcourses[index]['id'];
                                         String stringId = id.toString();
                                         String url =

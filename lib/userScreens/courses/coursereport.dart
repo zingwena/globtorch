@@ -1,3 +1,4 @@
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:globtorch/tools/animation.dart';
@@ -19,10 +20,8 @@ class ReportNavigation extends StatefulWidget {
 
 class _ReportNavigationState extends State<ReportNavigation> {
   final List listcourses;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,14 +30,8 @@ class _ReportNavigationState extends State<ReportNavigation> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -144,7 +137,7 @@ class _ReportNavigationState extends State<ReportNavigation> {
                                                 .getInstance();
                                         var token =
                                             prefs.getString('api_token');
-                                        if (isInternetOn) {
+                                        if (isDeviceConnected) {
                                           final url =
                                               "https://globtorch.com/api/courses/$courseIdString/results?api_token=$token";
                                           http.Response response = await http

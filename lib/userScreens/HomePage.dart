@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:globtorch/userScreens/chat/home_screen.dart';
-import 'package:globtorch/userScreens/coursereport.dart';
+import 'package:globtorch/userScreens/courses/coursereport.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/feedback.dart';
 import 'package:globtorch/userScreens/library.dart';
@@ -52,15 +52,15 @@ class _HomePageState extends State<HomePage> {
   bool isDeviceConnected = false;
 
   @override
-  void initState() {
-    super.initState();
-    getConnect();
-  }
-
-  @override
   void dispose() {
     listener.cancel();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getConnect();
   }
 
   void getConnect() async {

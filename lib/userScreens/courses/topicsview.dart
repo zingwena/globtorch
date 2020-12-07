@@ -1,11 +1,12 @@
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:globtorch/userScreens/topicpdf.dart';
+import 'package:globtorch/userScreens/courses/topicpdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,12 +25,9 @@ class _TopicViwState extends State<TopicViw> {
   final Map<String, dynamic> contentname;
 
   final String content;
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+
   ReceivePort _receivePort = ReceivePort();
+  bool isDeviceConnected = false;
 
   @override
   initState() {
@@ -60,14 +58,8 @@ class _TopicViwState extends State<TopicViw> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -125,7 +117,7 @@ class _TopicViwState extends State<TopicViw> {
                                 borderRadius: new BorderRadius.circular(50.0)),
                             onPressed: () async {
                               final status = await Permission.storage.request();
-                              if (isInternetOn) {
+                              if (isDeviceConnected) {
                                 print(contentname['topic']['contents']);
                                 if (status.isGranted) {
                                   for (var contentloop in contentname['topic']

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
@@ -39,11 +40,7 @@ class _SignUpPageState extends State<SignUpPage> {
   // Boolean variable for CircularProgressIndicator.
   bool visible = false;
   bool isLoading = true;
-  var wifiBSSID;
-  var wifiIP;
-  var wifiName;
-  bool iswificonnected = false;
-  bool isInternetOn = true;
+  bool isDeviceConnected = false;
 
   @override
   void initState() {
@@ -53,14 +50,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void getConnect() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      setState(() {
-        isInternetOn = false;
-      });
-    } else if (connectivityResult == ConnectivityResult.mobile) {
-      iswificonnected = false;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      iswificonnected = true;
+    if (connectivityResult != ConnectivityResult.none) {
+      isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
   }
 
@@ -698,7 +689,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                         String referral =
                                             referralController.text;
                                         _formKey.currentState.save();
-                                        if (isInternetOn) {
+                                        if (isDeviceConnected) {
                                           // Showing CircularProgressIndicator using State.
                                           showDialog(
                                             context: context,
