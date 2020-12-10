@@ -4,7 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/report.dart';
+import 'package:globtorch/userScreens/courses/report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

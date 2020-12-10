@@ -12,7 +12,18 @@ class TestChapters extends StatefulWidget {
 class _TestChaptersState extends State<TestChapters> {
   final List questionchapter;
   _TestChaptersState({this.questionchapter});
-  bool selected = false;
+  List<bool> _isChecked1;
+  List<bool> _isChecked2;
+  List<bool> _isChecked3;
+  List<bool> _isChecked4;
+  @override
+  void initState() {
+    super.initState();
+    _isChecked1 = List<bool>.filled(questionchapter.length, false);
+    _isChecked2 = List<bool>.filled(questionchapter.length, false);
+    _isChecked3 = List<bool>.filled(questionchapter.length, false);
+    _isChecked4 = List<bool>.filled(questionchapter.length, false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,15 +66,16 @@ class _TestChaptersState extends State<TestChapters> {
                                   'A:',
                                 ),
                                 Checkbox(
-                                    value: selected,
+                                    value: _isChecked1[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        selected = value;
+                                        _isChecked1[index] = value;
+                                        print(value);
                                       });
                                     }),
                                 Expanded(
                                     child: Text(
-                                  questionchapter[index]['answer_a'],
+                                  questionchapter[index]['answer_b'],
                                   overflow: TextOverflow.clip,
                                 )),
                               ],
@@ -78,10 +90,10 @@ class _TestChaptersState extends State<TestChapters> {
                                   'B:',
                                 ),
                                 Checkbox(
-                                    value: selected,
+                                    value: _isChecked2[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        selected = value;
+                                        _isChecked2[index] = value;
                                       });
                                     }),
                                 Expanded(
@@ -102,10 +114,10 @@ class _TestChaptersState extends State<TestChapters> {
                                   'C:',
                                 ),
                                 Checkbox(
-                                    value: selected,
+                                    value: _isChecked3[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        selected = value;
+                                        _isChecked3[index] = value;
                                       });
                                     }),
                                 Expanded(
@@ -126,10 +138,10 @@ class _TestChaptersState extends State<TestChapters> {
                                   'D:',
                                 ),
                                 Checkbox(
-                                    value: selected,
+                                    value: _isChecked4[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        selected = value;
+                                        _isChecked4[index] = value;
                                       });
                                     }),
                                 Expanded(

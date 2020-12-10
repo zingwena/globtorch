@@ -246,7 +246,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                               jsonConvert['chapter']
                                                   ['questions'];
                                           Navigator.of(context).push(
-                                              CupertinoPageRoute(
+                                              MaterialPageRoute(
                                                   builder:
                                                       (BuildContext context) =>
                                                           TestChapters(
