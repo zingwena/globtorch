@@ -6,7 +6,7 @@ import 'package:globtorch/userScreens/courses/coursereport.dart';
 import 'package:globtorch/userScreens/courses/listcourses.dart';
 import 'package:globtorch/userScreens/feedback.dart';
 import 'package:globtorch/userScreens/library.dart';
-import 'package:globtorch/userScreens/navigate_to_Discussions.dart';
+import 'package:globtorch/userScreens/discussion/navigate_to_Discussions.dart';
 import 'package:globtorch/userScreens/notification.dart';
 import 'package:globtorch/userScreens/resources.dart';
 import 'package:globtorch/userScreens/teachers.dart';

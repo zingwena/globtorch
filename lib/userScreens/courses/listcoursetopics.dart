@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
@@ -7,7 +8,6 @@ import 'package:globtorch/userScreens/courses/chaptertest.dart';
 import 'package:globtorch/userScreens/courses/topicsview.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:globtorch/tools/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

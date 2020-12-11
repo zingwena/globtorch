@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/fromcoursediscussions.dart';
+import 'package:globtorch/userScreens/discussion/fromcoursediscussions.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
