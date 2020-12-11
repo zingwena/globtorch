@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class TestChapters extends StatefulWidget {
@@ -16,6 +18,7 @@ class _TestChaptersState extends State<TestChapters> {
   List<bool> _isChecked2;
   List<bool> _isChecked3;
   List<bool> _isChecked4;
+  List<bool> _selection;
   @override
   void initState() {
     super.initState();
@@ -23,6 +26,7 @@ class _TestChaptersState extends State<TestChapters> {
     _isChecked2 = List<bool>.filled(questionchapter.length, false);
     _isChecked3 = List<bool>.filled(questionchapter.length, false);
     _isChecked4 = List<bool>.filled(questionchapter.length, false);
+    _selection = List<bool>.filled(questionchapter.length, false);
   }
 
   @override
@@ -39,7 +43,31 @@ class _TestChaptersState extends State<TestChapters> {
               child: Column(
                 children: [
                   SingleChildScrollView(
-                    child: Card(
+                      child: Column(children: [
+                    //   Text(
+                    //     questionchapter[index]['question'],
+                    //     overflow: TextOverflow.clip,
+                    //     style: TextStyle(fontWeight: FontWeight.bold),
+                    //   ),
+                    //   CheckboxListTile(
+                    //     title: Column(
+                    //       children: [
+                    //         Text(questionchapter[index]['answer_a']),
+                    //         Text(questionchapter[index]['answer_a']),
+                    //         Text(questionchapter[index]['answer_a']),
+                    //         Text(questionchapter[index]['answer_a']),
+                    //       ],
+                    //     ),
+                    //     value: _selection[index],
+                    //     onChanged: (value) {
+                    //       setState(() {
+                    //         _selection[index] = value;
+                    //       });
+                    //     },
+                    //   ),
+                    // ],
+
+                    Card(
                       child: Column(
                         children: [
                           Padding(
@@ -57,6 +85,24 @@ class _TestChaptersState extends State<TestChapters> {
                               ],
                             ),
                           ),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: Row(
+                          //     children: <Widget>[
+                          //       Expanded(
+                          //         child: Text(
+                          //           "Please Select One Answer!",
+                          //           overflow: TextOverflow.clip,
+                          //           style: TextStyle(
+                          //             fontStyle: FontStyle.italic,
+                          //             color: Colors.lightGreen,
+                          //           ),
+                          //           textAlign: TextAlign.center,
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
@@ -65,17 +111,18 @@ class _TestChaptersState extends State<TestChapters> {
                                 Text(
                                   'A:',
                                 ),
-                                Checkbox(
+                                CheckboxListTile(
                                     value: _isChecked1[index],
                                     onChanged: (value) {
                                       setState(() {
                                         _isChecked1[index] = value;
-                                        print(value);
+                                        String selectedanswer =
+                                            _isChecked1[index].toString();
                                       });
                                     }),
                                 Expanded(
                                     child: Text(
-                                  questionchapter[index]['answer_b'],
+                                  questionchapter[index]['answer_a'],
                                   overflow: TextOverflow.clip,
                                 )),
                               ],
@@ -156,7 +203,7 @@ class _TestChaptersState extends State<TestChapters> {
                         ],
                       ),
                     ),
-                  ),
+                  ])),
                 ],
               ),
             );
