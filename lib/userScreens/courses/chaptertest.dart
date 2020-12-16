@@ -22,7 +22,9 @@ class _TestChaptersState extends State<TestChapters> {
   String answerb;
   String answerc;
   String answerd;
-
+  String answer;
+  int numofquestn;
+  List<int> myList = List<int>();
   @override
   void initState() {
     super.initState();
@@ -48,6 +50,13 @@ class _TestChaptersState extends State<TestChapters> {
                     itemCount:
                         questionchapter == null ? 0 : questionchapter.length,
                     itemBuilder: (BuildContext context, int index) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          answer = questionchapter[index]['answer'];
+                          numofquestn = questionchapter.length;
+                        });
+                      });
+
                       return Container(
                         height: 400.0,
                         child: Column(
@@ -85,23 +94,25 @@ class _TestChaptersState extends State<TestChapters> {
                                               value: _isChecked1[index],
                                               onChanged: (value) {
                                                 setState(() {
-                                                  _isChecked1[index] = value;
-                                                  _isChecked2[index] = false;
-                                                  _isChecked3[index] = false;
-                                                  _isChecked4[index] = false;
-                                                  if (_isChecked1[index] ==
-                                                      true) {
+                                                  if (value = true) {
+                                                    _isChecked1[index] = value;
                                                     answera =
                                                         questionchapter[index]
                                                             ['answer_a'];
+                                                    _isChecked2[index] = false;
+                                                    _isChecked3[index] = false;
+                                                    _isChecked4[index] = false;
+                                                    myList.add(index);
                                                   }
                                                 });
                                               }),
                                           Expanded(
-                                              child: Text(
-                                            questionchapter[index]['answer_a'],
-                                            overflow: TextOverflow.clip,
-                                          )),
+                                            child: Text(
+                                              questionchapter[index]
+                                                  ['answer_a'],
+                                              overflow: TextOverflow.clip,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -118,25 +129,23 @@ class _TestChaptersState extends State<TestChapters> {
                                               value: _isChecked2[index],
                                               onChanged: (value) {
                                                 setState(() {
-                                                  _isChecked2[index] = value;
-                                                  _isChecked1[index] = false;
-                                                  _isChecked3[index] = false;
-                                                  _isChecked4[index] = false;
-                                                  if (_isChecked2[index] ==
-                                                      true) {
+                                                  if (value = true) {
+                                                    _isChecked2[index] = value;
                                                     answerb =
                                                         questionchapter[index]
                                                             ['answer_b'];
+                                                    _isChecked1[index] = false;
+                                                    _isChecked3[index] = false;
+                                                    _isChecked4[index] = false;
+                                                    myList.add(index);
                                                   }
                                                 });
                                               }),
                                           Expanded(
-                                            child: Text(
-                                              questionchapter[index]
-                                                  ['answer_b'],
-                                              overflow: TextOverflow.clip,
-                                            ),
-                                          ),
+                                              child: Text(
+                                            questionchapter[index]['answer_b'],
+                                            overflow: TextOverflow.clip,
+                                          )),
                                         ],
                                       ),
                                     ),
@@ -153,15 +162,15 @@ class _TestChaptersState extends State<TestChapters> {
                                               value: _isChecked3[index],
                                               onChanged: (value) {
                                                 setState(() {
-                                                  _isChecked3[index] = value;
-                                                  _isChecked2[index] = false;
-                                                  _isChecked1[index] = false;
-                                                  _isChecked4[index] = false;
-                                                  if (_isChecked3[index] ==
-                                                      true) {
+                                                  if (value = true) {
+                                                    _isChecked3[index] = value;
                                                     answerc =
                                                         questionchapter[index]
                                                             ['answer_c'];
+                                                    _isChecked2[index] = false;
+                                                    _isChecked1[index] = false;
+                                                    _isChecked4[index] = false;
+                                                    myList.add(index);
                                                   }
                                                 });
                                               }),
@@ -188,15 +197,15 @@ class _TestChaptersState extends State<TestChapters> {
                                               value: _isChecked4[index],
                                               onChanged: (value) {
                                                 setState(() {
-                                                  _isChecked4[index] = value;
-                                                  _isChecked2[index] = false;
-                                                  _isChecked3[index] = false;
-                                                  _isChecked1[index] = false;
-                                                  if (_isChecked4[index] ==
-                                                      true) {
+                                                  if (value = true) {
+                                                    _isChecked4[index] = value;
                                                     answerd =
                                                         questionchapter[index]
                                                             ['answer_d'];
+                                                    _isChecked2[index] = false;
+                                                    _isChecked3[index] = false;
+                                                    _isChecked1[index] = false;
+                                                    myList.add(index);
                                                   }
                                                 });
                                               }),
@@ -214,10 +223,6 @@ class _TestChaptersState extends State<TestChapters> {
                                 ),
                               ),
                             ),
-                            Text(
-                              "Submit",
-                              overflow: TextOverflow.clip,
-                            ),
                           ],
                         ),
                       );
@@ -228,15 +233,19 @@ class _TestChaptersState extends State<TestChapters> {
               height: 50.0,
               child: FlatButton.icon(
                 onPressed: () {
-                  if (_isChecked1[0] == true) {
-                    print(answera);
-                  } else if (_isChecked2[1] == true) {
-                    print(answerb);
-                  } else if (_isChecked3[2] == true) {
-                    print(answerc);
-                  } else if (_isChecked4[3] == true) {
-                    print(answerd);
-                  }
+                  print(myList);
+                  // for (var i = 0; i <= numofquestn; i++) {
+                  //   print(i);
+                  // }
+                  // if (_isChecked1[0] = true) {
+                  //   debugPrint(answera);
+                  // } else if (_isChecked2[1] = true) {
+                  //   print(answerb);
+                  // } else if (_isChecked3[2] = true) {
+                  //   print(answerc);
+                  // } else if (_isChecked4[3] = true) {
+                  //   print(answerd);
+                  // }
                 },
                 label: Icon(Icons.send),
                 icon: Text(
