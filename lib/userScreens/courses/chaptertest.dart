@@ -286,7 +286,7 @@ class _TestChaptersState extends State<TestChapters> {
                   var json = jsonEncode(answerValueList);
                   Map<String, dynamic> data = {
                     "number_of_records": numofquestn,
-                    "$answerKeysList": json,
+                    "$answerKeysList": answerValueList,
                     "$indexKeysList": indexValuesList,
                   };
                   //  print(json);
