@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -24,7 +25,12 @@ class _TestChaptersState extends State<TestChapters> {
   String answerd;
   String answer;
   int numofquestn;
-  List<int> myList = List<int>();
+  List<int> indexKeysList = List<int>();
+  List<int> indexValuesList = List<int>();
+  List<String> answerKeysList = List<String>();
+  List<String> answerValueList = List<String>();
+  String answr = "answer";
+
   @override
   void initState() {
     super.initState();
@@ -102,7 +108,18 @@ class _TestChaptersState extends State<TestChapters> {
                                                     _isChecked2[index] = false;
                                                     _isChecked3[index] = false;
                                                     _isChecked4[index] = false;
-                                                    myList.add(index);
+                                                    indexKeysList.add(index);
+                                                    answerKeysList.add(
+                                                        questionchapter[index]
+                                                                    ['id']
+                                                                .toString() +
+                                                            answr);
+                                                    indexValuesList.add(
+                                                        questionchapter[index]
+                                                            ['id']);
+                                                    answerValueList.add(
+                                                        questionchapter[index]
+                                                            ['answer_a']);
                                                   }
                                                 });
                                               }),
@@ -137,7 +154,18 @@ class _TestChaptersState extends State<TestChapters> {
                                                     _isChecked1[index] = false;
                                                     _isChecked3[index] = false;
                                                     _isChecked4[index] = false;
-                                                    myList.add(index);
+                                                    indexKeysList.add(index);
+                                                    answerKeysList.add(
+                                                        questionchapter[index]
+                                                                    ['id']
+                                                                .toString() +
+                                                            answr);
+                                                    indexValuesList.add(
+                                                        questionchapter[index]
+                                                            ['id']);
+                                                    answerValueList.add(
+                                                        questionchapter[index]
+                                                            ['answer_c']);
                                                   }
                                                 });
                                               }),
@@ -170,7 +198,18 @@ class _TestChaptersState extends State<TestChapters> {
                                                     _isChecked2[index] = false;
                                                     _isChecked1[index] = false;
                                                     _isChecked4[index] = false;
-                                                    myList.add(index);
+                                                    indexKeysList.add(index);
+                                                    answerKeysList.add(
+                                                        questionchapter[index]
+                                                                    ['id']
+                                                                .toString() +
+                                                            answr);
+                                                    indexValuesList.add(
+                                                        questionchapter[index]
+                                                            ['id']);
+                                                    answerValueList.add(
+                                                        questionchapter[index]
+                                                            ['answer_c']);
                                                   }
                                                 });
                                               }),
@@ -199,13 +238,24 @@ class _TestChaptersState extends State<TestChapters> {
                                                 setState(() {
                                                   if (value = true) {
                                                     _isChecked4[index] = value;
-                                                    answerd =
-                                                        questionchapter[index]
-                                                            ['answer_d'];
+                                                    // answerd =
+                                                    //     questionchapter[index]
+                                                    //         ['answer_d'];
                                                     _isChecked2[index] = false;
                                                     _isChecked3[index] = false;
                                                     _isChecked1[index] = false;
-                                                    myList.add(index);
+                                                    indexKeysList.add(index);
+                                                    answerKeysList.add(
+                                                        questionchapter[index]
+                                                                    ['id']
+                                                                .toString() +
+                                                            answr);
+                                                    indexValuesList.add(
+                                                        questionchapter[index]
+                                                            ['id']);
+                                                    answerValueList.add(
+                                                        questionchapter[index]
+                                                            ['answer_d']);
                                                   }
                                                 });
                                               }),
@@ -233,7 +283,14 @@ class _TestChaptersState extends State<TestChapters> {
               height: 50.0,
               child: FlatButton.icon(
                 onPressed: () {
-                  print(myList);
+                  var json = jsonEncode(answerValueList);
+                  Map<String, dynamic> data = {
+                    "number_of_records": numofquestn,
+                    "$answerKeysList": json,
+                    "$indexKeysList": indexValuesList,
+                  };
+                  //  print(json);
+
                   // for (var i = 0; i <= numofquestn; i++) {
                   //   print(i);
                   // }
