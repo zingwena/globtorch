@@ -247,11 +247,13 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                                                   ['questions'];
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          TestChapters(
-                                                              testquestions:
-                                                                  questions)));
+                                                  builder: (BuildContext
+                                                          context) =>
+                                                      TestChapters(
+                                                          testquestions:
+                                                              questions,
+                                                          chaptId: chapterId
+                                                              .toString())));
                                         },
                                         child: Text("Test"),
                                         color: Colors.red,

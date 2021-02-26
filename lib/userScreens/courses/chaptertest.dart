@@ -1,20 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:ui';
-
-import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class TestChapters extends StatefulWidget {
   final List testquestions;
-
-  TestChapters({Key key, this.testquestions}) : super(key: key);
+  final String chaptId;
+  TestChapters({Key key, this.testquestions, this.chaptId}) : super(key: key);
   @override
   _TestChaptersState createState() =>
-      _TestChaptersState(questionchapter: testquestions);
+      _TestChaptersState(questionchapter: testquestions, chapterId: chaptId);
 }
 
 class _TestChaptersState extends State<TestChapters> {
   final List questionchapter;
-  _TestChaptersState({this.questionchapter});
+  final String chapterId;
+  _TestChaptersState({this.questionchapter, this.chapterId});
   List<bool> _isChecked1;
   List<bool> _isChecked2;
   List<bool> _isChecked3;
@@ -282,14 +284,35 @@ class _TestChaptersState extends State<TestChapters> {
             SizedBox(
               height: 50.0,
               child: FlatButton.icon(
-                onPressed: () {
-                  var json = jsonEncode(answerValueList);
-                  Map<String, dynamic> data = {
+                onPressed: () async {
+                  String data = jsonEncode({
+                    // "number_of_records": 2,
+                    // "0": 1063,
+                    // "1063answer": "2 units",
+                    // "1": 3152,
+                    // "3152answer": "4",
+
                     "number_of_records": numofquestn,
                     "$answerKeysList": answerValueList,
                     "$indexKeysList": indexValuesList,
-                  };
-                  //  print(json);
+                  });
+
+                  Map<String, dynamic> toJson() => {
+                        "number_of_records": 2,
+                        "0": 1063,
+                        "1063answer": "2 units",
+                        "1": 3152,
+                        "3152answer": "4",
+                      };
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var token = prefs.getString('api_token');
+                  final url =
+                      "https://globtorch.com/api/chapters/$chapterId/answers?api_token=$token";
+                  http.Response response = await http.post(url,
+                      body: jsonEncode(toJson()),
+                      headers: {"Accept": "application/json"});
+                  print(response.body);
 
                   // for (var i = 0; i <= numofquestn; i++) {
                   //   print(i);
