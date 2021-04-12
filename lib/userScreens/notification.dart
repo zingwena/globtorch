@@ -3,26 +3,30 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:globtorch/userScreens/assigment/assignmenttable.dart';
+import 'package:globtorch/userScreens/chat/screens/chat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class Notifications extends StatefulWidget {
-  const Notifications({this.not});
+  const Notifications({this.not, this.isDeviceConn});
 
   @override
-  _NotificationsState createState() => _NotificationsState(notific: not);
+  _NotificationsState createState() =>
+      _NotificationsState(notific: not, isConAvailable: isDeviceConn);
   final List not;
+  final bool isDeviceConn;
 }
 
 class _NotificationsState extends State<Notifications> {
   final List notific;
-  _NotificationsState({this.notific});
+  final bool isConAvailable;
+  _NotificationsState({this.notific, this.isConAvailable});
   bool isDeviceConnected = false;
 
-  @override
-  void initState() {
+  /*@override
+  void initState() async {
     super.initState();
-    getConnect(); // calls getconnect method to check which type if connection it
+    getConnect();
   }
 
   void getConnect() async {
@@ -30,7 +34,7 @@ class _NotificationsState extends State<Notifications> {
     if (connectivityResult != ConnectivityResult.none) {
       isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +66,7 @@ class _NotificationsState extends State<Notifications> {
                     children: [
                       SingleChildScrollView(
                         child: Card(
-                          child: isDeviceConnected
+                          child: isConAvailable
                               ? ListTile(
                                   title: Text(notific[index]['title']),
                                   onTap: () async {
@@ -92,13 +96,29 @@ class _NotificationsState extends State<Notifications> {
                                                     assignmentdetails:
                                                         assgnmentJson,
                                                   )));
-                                    } else {
-                                      print("not");
+                                    } else if (strings.contains("chat_room")) {
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      var token = prefs.getString('api_token');
+                                      //"https://globtorch.com/api/chat_room?api_token=$token";
+                                      final urlAssignment =
+                                          "https://globtorch.com/api/chat_room?api_token=$token";
+                                      http.Response response = await http
+                                          .get(urlAssignment, headers: {
+                                        "Accept": "application/json"
+                                      });
+                                      var json = jsonDecode(response.body);
+                                      //print(json);
+                                      var assgnmentJson = json;
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  ChatScreen()));
                                     }
                                   },
                                 )
-                              : Text(
-                                  "No Internet connection, nortifications cann't be displayed"),
+                              : Text("No Notifications to display yet"),
                         ),
                       )
                     ],

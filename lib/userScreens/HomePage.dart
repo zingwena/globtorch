@@ -9,6 +9,7 @@ import 'package:globtorch/userScreens/library.dart';
 import 'package:globtorch/userScreens/discussion/navigate_to_Discussions.dart';
 import 'package:globtorch/userScreens/notification.dart';
 import 'package:globtorch/userScreens/resources.dart';
+import 'package:globtorch/userScreens/studentguide.dart';
 import 'package:globtorch/userScreens/teachers.dart';
 import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -106,11 +107,15 @@ class _HomePageState extends State<HomePage> {
                       http.Response response = await http
                           .get(url, headers: {"Accept": "application/json"});
                       var json = jsonDecode(response.body);
-                      print(notificnumber);
+                      setState(() {
+                        int not = json['num_unread_notifications'];
+                        notificnumber = not.toString();
+                      });
+                      print(json);
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) => Notifications(
-                                not: json['notifications'],
-                              )));
+                              not: json['notifications'],
+                              isDeviceConn: isDeviceConnected)));
                     } else {
                       showDialog(
                         context: context,
@@ -145,8 +150,9 @@ class _HomePageState extends State<HomePage> {
                     }
                   }),
               Container(
-                  child: notificnumber != null
-                      ? CircleAvatar(
+                  child: notificnumber == null
+                      ? Text("")
+                      : CircleAvatar(
                           radius: 10.0,
                           backgroundColor: Colors.red,
                           child: Text(
@@ -154,8 +160,7 @@ class _HomePageState extends State<HomePage> {
                             style:
                                 TextStyle(color: Colors.white, fontSize: 15.0),
                           ),
-                        )
-                      : Text(""))
+                        ))
             ],
           ),
         ],
@@ -437,8 +442,42 @@ class _HomePageState extends State<HomePage> {
                       _color = new Color.fromRGBO(_random.nextInt(256),
                           _random.nextInt(256), _random.nextInt(256), 1.0);
                     });
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => Library()));
+                    if (isDeviceConnected) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              Library(conn: isDeviceConnected)));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text(
+                                  "You are no longer connected to the internet"),
+                              content:
+                                  Text("Please turn on wifi or mobile data"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    var emaill = prefs.getString('email');
+                                    var namee = prefs.getString('name');
+                                    var surnamee = prefs.getString('surname');
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                HomePage(
+                                                  name: namee,
+                                                  surname: surnamee,
+                                                  email: emaill,
+                                                )));
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                    }
                   },
                   child: Container(
                     color: _color,
@@ -478,6 +517,10 @@ class _HomePageState extends State<HomePage> {
                       _color = new Color.fromRGBO(_random.nextInt(256),
                           _random.nextInt(256), _random.nextInt(256), 1.0);
                     });
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => StudentGuide()));
                   },
                   child: Container(
                     color: _color,
@@ -858,7 +901,8 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) => ExtResources()));
+                          builder: (BuildContext context) =>
+                              ExtResources(isconn: isDeviceConnected)));
                 },
               ),
               ListTile(
@@ -922,15 +966,19 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Student Guide"),
                 onTap: () {
-                  _scaffoldKey.currentState.showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.white,
-                      content: Text(
-                        "The student Guide will be updated soon",
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  );
+                  // _scaffoldKey.currentState.showSnackBar(
+                  //   SnackBar(
+                  //     backgroundColor: Colors.white,
+                  //     content: Text(
+                  //       "The student Guide will be updated soon",
+                  //       style: TextStyle(color: Colors.green),
+                  //     ),
+                  //   ),
+                  // );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => StudentGuide()));
                 },
               ),
               ListTile(

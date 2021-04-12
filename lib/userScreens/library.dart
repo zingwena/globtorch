@@ -1,18 +1,21 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:link/link.dart';
 
 class Library extends StatefulWidget {
+  const Library({Key key, this.conn}) : super(key: key);
+
   @override
-  _LibraryState createState() => _LibraryState();
+  _LibraryState createState() => _LibraryState(isconn: conn);
+  final bool conn;
 }
 
 class _LibraryState extends State<Library> {
   bool isDeviceConnected = false;
+  final bool isconn;
 
-  @override
+  _LibraryState({this.isconn});
+  /* @override
   void initState() {
     super.initState();
     getConnect(); // calls getconnect method to check which type if connection it
@@ -23,7 +26,7 @@ class _LibraryState extends State<Library> {
     if (connectivityResult != ConnectivityResult.none) {
       isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _LibraryState extends State<Library> {
           padding: const EdgeInsets.all(8),
           children: <Widget>[
             Card(
-              child: isDeviceConnected
+              child: isconn
                   ? Column(
                       children: [
                         Container(

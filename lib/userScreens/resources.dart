@@ -1,18 +1,21 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:link/link.dart';
 
 class ExtResources extends StatefulWidget {
+  const ExtResources({Key key, this.isconn}) : super(key: key);
+
   @override
-  _ExtResourcesState createState() => _ExtResourcesState();
+  _ExtResourcesState createState() => _ExtResourcesState(isDeviceConn: isconn);
+  final bool isconn;
 }
 
 class _ExtResourcesState extends State<ExtResources> {
-  bool isDeviceConnected = false;
+  final bool isDeviceConn;
 
-  @override
+  _ExtResourcesState({this.isDeviceConn});
+
+  /* @override
   void initState() {
     super.initState();
     getConnect(); // calls getconnect method to check which type if connection it
@@ -23,7 +26,7 @@ class _ExtResourcesState extends State<ExtResources> {
     if (connectivityResult != ConnectivityResult.none) {
       isDeviceConnected = await DataConnectionChecker().hasConnection;
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _ExtResourcesState extends State<ExtResources> {
           padding: const EdgeInsets.all(8),
           children: <Widget>[
             Card(
-              child: isDeviceConnected
+              child: isDeviceConn
                   ? Column(
                       children: [
                         Container(

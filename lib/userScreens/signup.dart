@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:globtorch/tools/animation.dart';
 import 'package:globtorch/tools/seperator.dart';
 import 'package:globtorch/tools/style.dart';
+import 'package:globtorch/userScreens/logfromreg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:globtorch/tools/constants.dart';
@@ -704,7 +705,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        _coursePayement(),
+                                                        _coursePayementInit(),
                                                     fullscreenDialog: true));
                                           },
                                           child: Text("Select Course")),
@@ -724,10 +725,11 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _coursePayement() {
+  Widget _coursePayementInit() {
     return Scaffold(
         appBar: AppBar(
           title: Text(""),
+          backgroundColor: Colors.blueAccent,
         ),
         body: Container(
           child: Padding(
@@ -744,8 +746,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     AppBar(
                       leading: Icon(Icons.verified_user),
                       elevation: 0,
-                      title: Text('Payement Details'),
-                      backgroundColor: Theme.of(context).accentColor,
+                      title: Text('Enter Ecocash Number'),
+                      backgroundColor: Colors.green,
                       centerTitle: true,
                     ),
                     Padding(
@@ -769,6 +771,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      color: Colors.red,
                       onPressed: () async {
                         if (_formKey1.currentState.validate()) {
                           int id = courseid;
@@ -777,6 +782,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (isDeviceConnected) {
                             String url =
                                 'https://globtorch.com/api/signup/payment';
+
                             var data = {
                               'course_id': id,
                               'phone': phonenumber,
@@ -788,34 +794,32 @@ class _SignUpPageState extends State<SignUpPage> {
                                   "Content-type": "application/json"
                                 });
                             var convertedDatatoJson = jsonDecode(response.body);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    "Check your Mobile for Confirmation......",
-                                    style: TextStyle(color: Colors.green),
-                                  ),
-                                  actions: <Widget>[
-                                    Visibility(
-                                        visible: visible,
-                                        child: Container(
-                                          margin: EdgeInsets.only(bottom: 20),
-                                          child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation(
-                                                Colors.red),
-                                          ),
-                                        ))
-                                  ],
-                                );
-                              },
-                            );
-                            setState(() {
-                              visible = true;
-                              isLoading = true;
-                            });
+                            //  print(convertedDatatoJson['url']);
                             if (response.statusCode == 200) {
-                             // print(convertedDatatoJson);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => _verifyPayement(
+                                          convertedDatatoJson['url']),
+                                      fullscreenDialog: true));
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Unknown error"),
+                                    content: Text("Unable to process payment"),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             }
                           } else {
                             showDialog(
@@ -838,137 +842,204 @@ class _SignUpPageState extends State<SignUpPage> {
                               },
                             );
                           }
-                          //Entire Registration
-                          /* String fname = fnameController.text;
-                        String sname = surnameController.text;
-                        String phone = phoneController.text;
-                        String email = emailController.text;
-                        String country = countryController.text;
-                        String pwd = passwordControlller.text;
-                        String referral = referralController.text;
-                        _formKey.currentState.save();
-                        if (isDeviceConnected) {
-                          // Showing CircularProgressIndicator using State.
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(
-                                  "Please wait......",
-                                  style: TextStyle(color: Colors.green),
+                        }
+                      },
+                      child: Text('Pay Now'),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+
+  Widget _verifyPayement(String url) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(""),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: Container(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Material(
+              elevation: 1,
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  AppBar(
+                    leading: Icon(Icons.verified_user),
+                    elevation: 0,
+                    title: Text('Verify Payement'),
+                    backgroundColor: Colors.green,
+                    centerTitle: true,
+                  ),
+                  SizedBox(
+                    height: 50.0,
+                  ),
+                  Text(
+                      "Once you have authorised the payment via your handset, please click Verify For Payment below to conclude this transaction."),
+                  RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    color: Colors.green,
+                    onPressed: () async {
+                      // final urli = url;
+                      http.Response response = await http
+                          .get(url, headers: {"Accept": "application/json"});
+                      var json = jsonDecode(response.body);
+                      //print(json);
+
+                      if (response.statusCode == 200) {
+                        //print(json['reference']);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    _completeRegistration(json['reference']),
+                                fullscreenDialog: true));
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("${json['errors']['register']}"),
+                              content: Text("${json['message']}"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
                                 ),
-                                actions: <Widget>[
-                                  Visibility(
-                                      visible: visible,
-                                      child: Container(
-                                        margin: EdgeInsets.only(bottom: 20),
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation(
-                                              Colors.red),
-                                        ),
-                                      ))
-                                ],
-                              );
-                            },
-                          );
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    textColor: Colors.white,
+                    child: Text('Verify'),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+
+  Widget _completeRegistration(String reference) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(""),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: Container(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Material(
+              elevation: 1,
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  AppBar(
+                    leading: Icon(Icons.verified_user),
+                    elevation: 0,
+                    title: Text('Complete Registration Process'),
+                    backgroundColor: Colors.green,
+                    centerTitle: true,
+                  ),
+                  RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    color: Colors.red,
+                    onPressed: () async {
+                      //Entire Registration
+                      int id = courseid;
+                      String fname = fnameController.text;
+                      String sname = surnameController.text;
+                      String phone = phoneController.text;
+                      String email = emailController.text;
+                      String country = countryController.text;
+                      String pwd = passwordControlller.text;
+                      // String referral = referralController.text;
+                      _formKey.currentState.save();
+                      if (isDeviceConnected) {
+                        // Showing CircularProgressIndicator using State.
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                "Please wait......",
+                                style: TextStyle(color: Colors.green),
+                              ),
+                              actions: <Widget>[
+                                Visibility(
+                                    visible: visible,
+                                    child: Container(
+                                      margin: EdgeInsets.only(bottom: 20),
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation(Colors.red),
+                                      ),
+                                    ))
+                              ],
+                            );
+                          },
+                        );
+                        setState(() {
+                          visible = true;
+                          isLoading = true;
+                        });
+
+                        String url = 'https://globtorch.com/api/signup';
+
+                        var data = {
+                          'name': fname,
+                          'surname': sname,
+                          'phone': phone,
+                          'email': email,
+                          'country': country,
+                          'password': pwd,
+                          'course_id': id,
+                          'paynow_ref': reference,
+                        };
+                        print(jsonEncode(data));
+
+                        // Starting Web Call with data.
+                        final response = await http.post(url,
+                            body: jsonEncode(data),
+                            headers: {
+                              "Accept": "application/json",
+                              "Content-type": "application/json"
+                            });
+                        var convertedDatatoJson = jsonDecode(response.body);
+                        //print(convertedDatatoJson);
+                        //print(response.statusCode);
+
+                        if (response.statusCode == 422) {
                           setState(() {
-                            visible = true;
-                            isLoading = true;
+                            visible = false;
                           });
-
-                          String url = 'https://globtorch.com/api/signup';
-
-                          var data = {
-                            'name': fname,
-                            'surname': sname,
-                            'phone': phone,
-                            'email': email,
-                            'country': country,
-                            'password': pwd,
-                            'course_id': id,
-                            'paynow_ref': referral,
-                          };
-                          print(jsonEncode(data));
-
-                          // Starting Web Call with data.
-                          final response = await http.post(url,
-                              body: jsonEncode(data),
-                              headers: {
-                                "Accept": "application/json",
-                                "Content-type": "application/json"
-                              });
-                          var convertedDatatoJson = jsonDecode(response.body);
-                          //print(convertedDatatoJson);
-                          //print(response.statusCode);
-
-                          if (response.statusCode == 422) {
-                            setState(() {
-                              visible = false;
-                            });
-                            String mesg = convertedDatatoJson['message']
-                                .toString()
-                                .trim();
-                            String error = convertedDatatoJson['errors']
-                                .toString()
-                                .trimLeft();
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    '$mesg $error',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text("OK"),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else if (response.statusCode == 200) {
-                            String schoolId =
-                                convertedDatatoJson['data']['school_id'];
-                            setState(() {
-                              visible = false;
-                            });
-
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    "Successifully registered, Please take this ID for LogIn $schoolId",
-                                    style: TextStyle(color: Colors.green),
-                                  ),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text("Login"),
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => LogIn()));
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        } else {
+                          String mesg =
+                              convertedDatatoJson['message'].toString().trim();
+                          String error = convertedDatatoJson['errors']
+                              .toString()
+                              .trimLeft();
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                    "You are no longer connected to the internet"),
-                                content:
-                                    Text("Please turn on wifi or mobile data"),
+                                  '$mesg $error',
+                                  style: TextStyle(color: Colors.red),
+                                ),
                                 actions: <Widget>[
                                   FlatButton(
                                     child: Text("OK"),
@@ -980,13 +1051,63 @@ class _SignUpPageState extends State<SignUpPage> {
                               );
                             },
                           );
-                        }*/
+                        } else if (response.statusCode == 200) {
+                          String schoolId =
+                              convertedDatatoJson['data']['school_id'];
+                          setState(() {
+                            visible = false;
+                          });
+
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  "Successifully registered, Please proceed to LogIn",
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text("Login"),
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LogInFromRegistration(
+                                                      id: schoolId)));
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         }
-                      },
-                      child: Text('Pay'),
-                    )
-                  ],
-                ),
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                  "You are no longer connected to the internet"),
+                              content:
+                                  Text("Please turn on wifi or mobile data"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text("OK"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Text('Complete Registration'),
+                  )
+                ],
               ),
             ),
           ),

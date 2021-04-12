@@ -348,8 +348,8 @@ class _AssignmentListState extends State<AssignmentList> {
               SizedBox(
                 width: 100.0,
               ),
-              Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+              Expanded(
+                  // padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: resultString != null
                       ? Text(
                           filename,

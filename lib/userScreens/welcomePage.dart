@@ -41,7 +41,15 @@ class _WelcomePageState extends State<WelcomePage> {
   landingBody() => SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[landingHeader(), landingFields(), spaceMethod()],
+          children: <Widget>[
+            landingHeader(),
+            landingFields(),
+            Container(
+              height: 10,
+            ),
+            whyRegisgter(),
+            spaceMethod(),
+          ],
         ),
       );
 
@@ -216,5 +224,102 @@ class _WelcomePageState extends State<WelcomePage> {
       );
   spaceMethod() => Container(
         height: 20.0,
+      );
+  whyRegisgter() => Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Why Register at Globtorch!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+              width: double.infinity,
+              child: Text(
+                "Zimbabwe’s leading online education specialist offering courses for all levels of learning, from primary to tertiary education",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+              width: double.infinity,
+              child: Text(
+                "Affordable – low cost education where you get more for less; pay for all your courses at once and save big",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+              width: double.infinity,
+              child: Text(
+                "Flexible – with 24/7 course access and support you can learn at your own pace, on your own time",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+              width: double.infinity,
+              child: Text(
+                "Reputable – GLOBTORCH is registered with the Ministry of Primary and Secondary Education as well as tertiary education and exam boards including ACCA, IAC, etc. so we are bound by strict standards of excellence",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Container(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+              width: double.infinity,
+              child: Text(
+                "Dynamic – adaptive course content ensures that the education you receive is always relevant",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
 }
