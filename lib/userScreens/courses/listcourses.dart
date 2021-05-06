@@ -44,8 +44,8 @@ class _ListCoursesState extends State<ListCourses> {
         width: double.infinity,
         decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-          Color(0xFF398AE5),
-          Colors.red,
+          Colors.green[700],
+          Colors.green,
           Colors.green,
         ])),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <

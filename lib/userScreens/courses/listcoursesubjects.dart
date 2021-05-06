@@ -45,7 +45,7 @@ class _ListSubjectsState extends State<ListSubjects> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
           child: AppBar(
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: Colors.green[200],
             flexibleSpace: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(

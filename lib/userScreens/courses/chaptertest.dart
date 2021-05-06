@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'dart:ui';
-import 'package:http/http.dart' as http;
 
 class TestChapters extends StatefulWidget {
   final List testquestions;
@@ -45,6 +41,14 @@ class _TestChaptersState extends State<TestChapters> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Test"),
+      ),
+      body: Center(
+        child: Text("Writing test on mobile will be updated soon"),
+      ),
+    );
+    /*return Scaffold(
         appBar: AppBar(
           title: Text("Test"),
         ),
@@ -286,12 +290,6 @@ class _TestChaptersState extends State<TestChapters> {
               child: FlatButton.icon(
                 onPressed: () async {
                   String data = jsonEncode({
-                    // "number_of_records": 2,
-                    // "0": 1063,
-                    // "1063answer": "2 units",
-                    // "1": 3152,
-                    // "3152answer": "4",
-
                     "number_of_records": numofquestn,
                     "$answerKeysList": answerValueList,
                     "$indexKeysList": indexValuesList,
@@ -339,6 +337,6 @@ class _TestChaptersState extends State<TestChapters> {
               height: 15.0,
             )
           ],
-        ));
+        ));*/
   }
 }

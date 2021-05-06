@@ -611,8 +611,8 @@ class _SignUpPageState extends State<SignUpPage> {
         decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, colors: [
           //Color(0xFF398AE5),
-          Colors.blueAccent,
-          Colors.red,
+          Colors.green[700],
+          Colors.green,
           Colors.green,
         ])),
         child: Column(
