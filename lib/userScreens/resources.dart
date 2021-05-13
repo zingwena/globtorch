@@ -3,18 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:link/link.dart';
 
 class ExtResources extends StatefulWidget {
-  const ExtResources({Key key, this.isconn}) : super(key: key);
-
   @override
-  _ExtResourcesState createState() => _ExtResourcesState(isDeviceConn: isconn);
-  final bool isconn;
+  _ExtResourcesState createState() => _ExtResourcesState();
 }
 
 class _ExtResourcesState extends State<ExtResources> {
-  final bool isDeviceConn;
-
-  _ExtResourcesState({this.isDeviceConn});
-
   /* @override
   void initState() {
     super.initState();
@@ -40,78 +33,72 @@ class _ExtResourcesState extends State<ExtResources> {
           padding: const EdgeInsets.all(8),
           children: <Widget>[
             Card(
-              child: isDeviceConn
-                  ? Column(
-                      children: [
-                        Container(
-                          height: 50,
-                          color: Colors.white,
-                          child: Center(
-                              child: TyperAnimatedTextKit(
-                            text: ["Below are links to awarding bodies:"],
-                            isRepeatingAnimation: true,
-                          )),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          child: Link(
-                            url:
-                                "https://www.accaglobal.com/gb/en/qualifications/accountancy-career/fees/fees-charges-ssa.html?countrycode=Zimbabwe",
-                            child: ListTile(
-                              title: Text("ACCA",
-                                  style: TextStyle(color: Colors.white)),
-                            ),
-                          ),
-                          color: Colors.indigo,
-                        ),
-                        Card(
-                          child: Link(
-                              url: "http://www.iac.co.zw/",
-                              child: ListTile(
-                                title: Text("IAC",
-                                    style: TextStyle(color: Colors.white)),
-                              )),
-                          color: Colors.teal,
-                        ),
-                        Card(
-                          child: Link(
-                              url: "https://www.zimsec.co.zw/resources/",
-                              child: ListTile(
-                                title: Text("ZIMSEC",
-                                    style: TextStyle(color: Colors.white)),
-                              )),
-                          color: Colors.red,
-                        ),
-                        Card(
-                          child: Link(
-                              url:
-                                  "https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-upper-secondary/cambridge-igcse/subjects/",
-                              child: ListTile(
-                                title: Text("CAMBIDGE",
-                                    style: TextStyle(color: Colors.white)),
-                              )),
-                          color: Colors.yellow[600],
-                        ),
-                        Card(
-                          child: Link(
-                              url: "https://papers.xtremepape.rs/CAIE/IGCSE/",
-                              child: ListTile(
-                                title: Text(
-                                  "XTREME PAPERS",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              )),
-                          color: Colors.deepPurple[900],
-                        ),
-                      ],
-                    )
-                  : Center(
-                      child: Text(
-                          "No Internet connection , Library cann't be displayed"),
+                child: Column(
+              children: [
+                Container(
+                  height: 50,
+                  color: Colors.white,
+                  child: Center(
+                      child: TyperAnimatedTextKit(
+                    text: ["Below are links to awarding bodies:"],
+                    isRepeatingAnimation: true,
+                  )),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Card(
+                  child: Link(
+                    url:
+                        "https://www.accaglobal.com/gb/en/qualifications/accountancy-career/fees/fees-charges-ssa.html?countrycode=Zimbabwe",
+                    child: ListTile(
+                      title:
+                          Text("ACCA", style: TextStyle(color: Colors.white)),
                     ),
-            ),
+                  ),
+                  color: Colors.indigo,
+                ),
+                Card(
+                  child: Link(
+                      url: "http://www.iac.co.zw/",
+                      child: ListTile(
+                        title:
+                            Text("IAC", style: TextStyle(color: Colors.white)),
+                      )),
+                  color: Colors.teal,
+                ),
+                Card(
+                  child: Link(
+                      url: "https://www.zimsec.co.zw/resources/",
+                      child: ListTile(
+                        title: Text("ZIMSEC",
+                            style: TextStyle(color: Colors.white)),
+                      )),
+                  color: Colors.red,
+                ),
+                Card(
+                  child: Link(
+                      url:
+                          "https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-upper-secondary/cambridge-igcse/subjects/",
+                      child: ListTile(
+                        title: Text("CAMBIDGE",
+                            style: TextStyle(color: Colors.white)),
+                      )),
+                  color: Colors.yellow[600],
+                ),
+                Card(
+                  child: Link(
+                      url: "https://papers.xtremepape.rs/CAIE/IGCSE/",
+                      child: ListTile(
+                        title: Text(
+                          "XTREME PAPERS",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )),
+                  color: Colors.deepPurple[900],
+                ),
+              ],
+            )),
           ],
         ));
   }

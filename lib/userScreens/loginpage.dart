@@ -1,10 +1,11 @@
+import 'package:Globtorch/tools/constants.dart';
+import 'package:Globtorch/userScreens/HomePage.dart';
+import 'package:Globtorch/userScreens/signup.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:globtorch/tools/constants.dart';
-import 'package:globtorch/userScreens/HomePage.dart';
-import 'package:globtorch/userScreens/signup.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -404,7 +405,8 @@ class _LogInState extends State<LogIn> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: new Text("No internet connection"),
-              content: Text("Please turn on wifi or mobile data"),
+              content:
+                  Text("Please turn on/reconnect to a wifi or mobile data"),
               actions: <Widget>[
                 FlatButton(
                   child: new Text("OK"),

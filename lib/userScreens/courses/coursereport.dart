@@ -1,10 +1,11 @@
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:Globtorch/tools/animation.dart';
+import 'package:Globtorch/tools/seperator.dart';
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/courses/report.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:globtorch/tools/animation.dart';
-import 'package:globtorch/tools/seperator.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/courses/report.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

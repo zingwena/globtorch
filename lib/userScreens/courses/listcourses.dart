@@ -1,11 +1,12 @@
+import 'package:Globtorch/tools/animation.dart';
+import 'package:Globtorch/tools/seperator.dart';
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/courses/listcoursesubjects.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/tools/animation.dart';
-import 'package:globtorch/tools/seperator.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/courses/listcoursesubjects.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -43,11 +44,9 @@ class _ListCoursesState extends State<ListCourses> {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-          Colors.green[700],
-          Colors.green,
-          Colors.green,
-        ])),
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                colors: [Colors.blue.shade900, Colors.blue.shade100])),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
             Widget>[
           SizedBox(
@@ -59,7 +58,7 @@ class _ListCoursesState extends State<ListCourses> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 FadeAnimation(
-                  1,
+                  1.5,
                   Text(
                     "My Courses",
                     style: TextStyle(
@@ -189,7 +188,7 @@ class _ListCoursesState extends State<ListCourses> {
                             ),
                           ],
                         )),
-                    color: Colors.blue[500],
+                    color: Colors.green.shade50,
                   );
                 },
               ),

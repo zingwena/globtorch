@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:Globtorch/userScreens/discussion/creatediscussion.dart';
+import 'package:Globtorch/userScreens/discussion/discussiondetails.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/discussion/creatediscussion.dart';
-import 'package:globtorch/userScreens/discussion/discussiondetails.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -89,51 +90,40 @@ class _DiscussionsState extends State<Discussions> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SingleChildScrollView(
-                        child: Card(
-                            child: isDeviceConnected
-                                ? ListTile(
-                                    title: Text(
-                                      listdiscussion[index]['title'],
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    subtitle:
-                                        Text(listdiscussion[index]['body']),
-                                    onTap: () async {
-                                      int discussionId =
-                                          listdiscussion[index]['id'];
-                                      String discussionIdStrng =
-                                          discussionId.toString();
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      var token = prefs.getString('api_token');
-                                      final discdetailUrl =
-                                          "https://globtorch.com/api/discussions/$discussionIdStrng?api_token=$token";
-                                      http.Response response = await http
-                                          .get(discdetailUrl, headers: {
-                                        "Accept": "application/json"
-                                      });
-                                      var json = jsonDecode(response.body);
-                                      List comments = json['comments'];
-                                      Map<String, dynamic> discdetails = json;
-                                      print(json['id']);
-                                      int discId = json['id'];
-                                      Navigator.push(
-                                          (context),
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  DiscussionDetails(
-                                                      discussionId: discId,
-                                                      detaildiscussion:
-                                                          discdetails,
-                                                      commentslist: comments,
-                                                      sbname: subjctnamedis)));
-                                    },
-                                  )
-                                : Text(
-                                    "No Internet connection, discussions cann't be displayed")),
-                      )
+                          child: Card(
+                              child: ListTile(
+                        title: Text(
+                          listdiscussion[index]['title'],
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(listdiscussion[index]['body']),
+                        onTap: () async {
+                          int discussionId = listdiscussion[index]['id'];
+                          String discussionIdStrng = discussionId.toString();
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          var token = prefs.getString('api_token');
+                          final discdetailUrl =
+                              "https://globtorch.com/api/discussions/$discussionIdStrng?api_token=$token";
+                          http.Response response = await http.get(discdetailUrl,
+                              headers: {"Accept": "application/json"});
+                          var json = jsonDecode(response.body);
+                          List comments = json['comments'];
+                          Map<String, dynamic> discdetails = json;
+                          print(json['id']);
+                          int discId = json['id'];
+                          Navigator.push(
+                              (context),
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      DiscussionDetails(
+                                          discussionId: discId,
+                                          detaildiscussion: discdetails,
+                                          commentslist: comments,
+                                          sbname: subjctnamedis)));
+                        },
+                      )))
                     ],
                   )
                 ],
@@ -144,7 +134,7 @@ class _DiscussionsState extends State<Discussions> {
       floatingActionButton: FloatingActionButton.extended(
         label: Text('New Discussion'),
         icon: Icon(Icons.add),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: Colors.purple[900],
         onPressed: () {
           Navigator.push(
               (context),

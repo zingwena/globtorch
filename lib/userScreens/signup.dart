@@ -1,16 +1,17 @@
+import 'package:Globtorch/tools/constants.dart';
+import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:Globtorch/tools/animation.dart';
+import 'package:Globtorch/tools/seperator.dart';
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/logfromreg.dart';
+import 'package:Globtorch/userScreens/loginpage.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:globtorch/tools/animation.dart';
-import 'package:globtorch/tools/seperator.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/logfromreg.dart';
+
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
-import 'package:globtorch/tools/constants.dart';
 import 'package:flutter/services.dart';
-import 'package:globtorch/userScreens/loginpage.dart';
 
 class SignUpPage extends StatefulWidget {
   final List listc;
@@ -611,9 +612,7 @@ class _SignUpPageState extends State<SignUpPage> {
         decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, colors: [
           //Color(0xFF398AE5),
-          Colors.green[700],
-          Colors.green,
-          Colors.green,
+          Colors.blue.shade900, Colors.blue.shade100
         ])),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,7 +713,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ],
                             )),
-                        color: Colors.blue[500],
+                        color: Colors.green.shade50,
                       );
                     },
                   ),

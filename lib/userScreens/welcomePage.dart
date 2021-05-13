@@ -1,9 +1,10 @@
+import 'package:Globtorch/userScreens/loginpage.dart';
+import 'package:Globtorch/userScreens/signup.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/loginpage.dart';
-import 'package:globtorch/userScreens/signup.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -147,10 +148,34 @@ class _WelcomePageState extends State<WelcomePage> {
                           headers: {"Accept": "application/json"});
                       var json = jsonDecode(response.body);
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignUpPage(listc: json)));
+                      if (response.statusCode == 200) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignUpPage(listc: json)));
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: new Text("Alert!"),
+                              content: Text("Cannot display Courses"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("OK"),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SignUpPage(listc: json)));
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     } else {
                       showDialog(
                         context: context,

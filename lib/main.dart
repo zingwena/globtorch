@@ -1,7 +1,7 @@
+import 'package:Globtorch/userScreens/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:globtorch/userScreens/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'userScreens/welcomePage.dart';
 

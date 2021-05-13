@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
+
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:Globtorch/userScreens/courses/topicpdf.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:globtorch/userScreens/courses/topicpdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,7 +73,7 @@ class _TopicViwState extends State<TopicViw> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
           child: AppBar(
-            backgroundColor: Colors.green[400],
+            backgroundColor: Colors.green.shade900,
             flexibleSpace: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -83,13 +84,12 @@ class _TopicViwState extends State<TopicViw> {
                               alignment: Alignment.center,
                               child: Text(content,
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 20,
                                   )))),
                       SizedBox(height: 10),
-                      Text("Topic Content",
-                          style: TextStyle(
-                              color: Color(0xff59595a), fontSize: 15)),
+                      Text("Content",
+                          style: TextStyle(color: Colors.white, fontSize: 15)),
                     ])),
             centerTitle: true,
           )),
@@ -106,84 +106,76 @@ class _TopicViwState extends State<TopicViw> {
                     blockSpacing: 14.0,
                   )),
                   ListTile(
-                    title: Container(
-                      child: Container(
-                        width: 10.0,
-                        height: 40.0,
-                        child: FlatButton(
-                            textColor: Colors.white,
-                            color: Colors.blue,
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(50.0)),
-                            onPressed: () async {
-                              final status = await Permission.storage.request();
-                              if (isDeviceConnected) {
-                                print(contentname['topic']['contents']);
-                                if (status.isGranted) {
-                                  for (var contentloop in contentname['topic']
-                                      ['contents']) {
-                                    if (contentloop['type'] == 'pdf') {
-                                      var contentID = contentloop['id'];
-                                      print(contentID);
-                                      String stringcontentID =
-                                          contentID.toString();
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
+                    title: FlatButton(
+                        minWidth: 20,
+                        textColor: Colors.white,
+                        color: Colors.green[700],
+                        shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(50.0)),
+                        onPressed: () async {
+                          final status = await Permission.storage.request();
+                          if (isDeviceConnected) {
+                            print(contentname['topic']['contents']);
+                            if (status.isGranted) {
+                              for (var contentloop in contentname['topic']
+                                  ['contents']) {
+                                if (contentloop['type'] == 'pdf') {
+                                  var contentID = contentloop['id'];
+                                  print(contentID);
+                                  String stringcontentID = contentID.toString();
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
 
-                                      var token = prefs.getString('api_token');
-                                      final url =
-                                          "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
-                                      final filename = contentloop['name'];
-                                      final filepath = contentloop['path'];
-                                      final externalDir =
-                                          await getExternalStorageDirectory();
-                                      final id =
-                                          await FlutterDownloader.enqueue(
-                                        url:
-                                            "https://globtorch.com/api/contents/$stringcontentID?api_token=$token",
-                                        savedDir: externalDir.path,
-                                        fileName: "$filepath",
-                                        showNotification: true,
-                                        openFileFromNotification: true,
-                                      );
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  PDFTopic(
-                                                      name: filename,
-                                                      path: filepath,
-                                                      link: url)));
-                                    }
-                                  }
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: new Text(
-                                            "You are no longer connected to the internet"),
-                                        content: Text(
-                                            "Please turn on wifi or mobile data"),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            child: new Text("OK"),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                  var token = prefs.getString('api_token');
+                                  final url =
+                                      "https://globtorch.com/api/contents/$stringcontentID?api_token=$token";
+                                  final filename = contentloop['name'];
+                                  final filepath = contentloop['path'];
+                                  final externalDir =
+                                      await getExternalStorageDirectory();
+                                  final id = await FlutterDownloader.enqueue(
+                                    url:
+                                        "https://globtorch.com/api/contents/$stringcontentID?api_token=$token",
+                                    savedDir: externalDir.path,
+                                    fileName: "$filepath",
+                                    showNotification: true,
+                                    openFileFromNotification: true,
                                   );
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          PDFTopic(
+                                              name: filename,
+                                              path: filepath,
+                                              link: url)));
                                 }
                               }
-                            },
-                            child: Text(
-                              "View content in pdf",
-                              style: TextStyle(fontSize: 20.0),
-                            )),
-                      ),
-                    ),
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: new Text(
+                                        "You are no longer connected to the internet"),
+                                    content: Text(
+                                        "Please turn on wifi or mobile data"),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: new Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          "Download",
+                          style: TextStyle(fontSize: 20.0),
+                        )),
                   ),
                 ],
               ),

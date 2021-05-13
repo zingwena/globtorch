@@ -1,8 +1,8 @@
-name: globtorch
+name: Globtorch
 description: Globtorch Mobile
 
 
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -54,7 +54,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter_icons:
-  image_path: "assets/images/globt.jpg" 
+  image_path: "assets/images/ic_launcher.png" 
   android: true
   ios: true
 flutter:

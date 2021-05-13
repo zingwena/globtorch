@@ -1,9 +1,9 @@
 import 'dart:ui';
 
+import 'package:Globtorch/tools/seperator.dart';
+import 'package:Globtorch/userScreens/rate_a_teacher.dart';
+import 'package:Globtorch/userScreens/teacher_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/tools/seperator.dart';
-import 'package:globtorch/userScreens/rate_a_teacher.dart';
-import 'package:globtorch/userScreens/teacher_profile.dart';
 
 class MyTeachers extends StatefulWidget {
   final myteachers;

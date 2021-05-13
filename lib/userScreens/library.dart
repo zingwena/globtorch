@@ -3,18 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:link/link.dart';
 
 class Library extends StatefulWidget {
-  const Library({Key key, this.conn}) : super(key: key);
 
   @override
-  _LibraryState createState() => _LibraryState(isconn: conn);
-  final bool conn;
+  _LibraryState createState() => _LibraryState();
 }
 
 class _LibraryState extends State<Library> {
-  bool isDeviceConnected = false;
-  final bool isconn;
-
-  _LibraryState({this.isconn});
+  
   /* @override
   void initState() {
     super.initState();
@@ -40,8 +35,8 @@ class _LibraryState extends State<Library> {
           padding: const EdgeInsets.all(8),
           children: <Widget>[
             Card(
-              child: isconn
-                  ? Column(
+              child: 
+                 Column(
                       children: [
                         Container(
                           height: 50,
@@ -69,10 +64,7 @@ class _LibraryState extends State<Library> {
                         ),
                       ],
                     )
-                  : Center(
-                      child: Text(
-                          "No Internet connection , Library cann't be displayed"),
-                    ),
+                 
             ),
           ],
         ));

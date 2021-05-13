@@ -1,21 +1,22 @@
+import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DiscussionDetails extends StatefulWidget {
-  const DiscussionDetails(
+class DiscussionFromNotif extends StatefulWidget {
+  const DiscussionFromNotif(
       {Key key,
       this.detaildiscussion,
       this.commentslist,
       this.sbname,
       this.discussionId})
       : super(key: key);
+
   @override
-  _DiscussionDetailsState createState() => _DiscussionDetailsState(
+  _DiscussionFromNotifState createState() => _DiscussionFromNotifState(
       discussiondetails: detaildiscussion,
       listcomentss: commentslist,
       subjectname: sbname,
@@ -26,12 +27,12 @@ class DiscussionDetails extends StatefulWidget {
   final int discussionId;
 }
 
-class _DiscussionDetailsState extends State<DiscussionDetails> {
+class _DiscussionFromNotifState extends State<DiscussionFromNotif> {
   final Map<String, dynamic> discussiondetails;
   final List listcomentss;
   final int discId;
   final String subjectname;
-  _DiscussionDetailsState(
+  _DiscussionFromNotifState(
       {this.discussiondetails,
       this.listcomentss,
       this.subjectname,
@@ -155,7 +156,7 @@ class _DiscussionDetailsState extends State<DiscussionDetails> {
                       Expanded(
                           child: Container(
                               alignment: Alignment.center,
-                              child: Text(subjectname,
+                              child: Text("Subject",
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,

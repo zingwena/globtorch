@@ -1,14 +1,16 @@
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/courses/chaptertest.dart';
+import 'package:Globtorch/userScreens/courses/topicsview.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart' as prefix0;
-import 'package:globtorch/userScreens/courses/chaptertest.dart';
-import 'package:globtorch/userScreens/courses/topicsview.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
-import 'package:globtorch/tools/style.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListTopicsContent extends StatefulWidget {
@@ -52,7 +54,7 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
           child: AppBar(
-            backgroundColor: Colors.green[400],
+            backgroundColor: Colors.green.shade900,
             flexibleSpace: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -63,13 +65,12 @@ class _ListTopicsContentState extends State<ListTopicsContent> {
                               alignment: Alignment.center,
                               child: Text(tpname,
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 20,
                                   )))),
                       SizedBox(height: 10),
                       Text("Chapter Topics",
-                          style: TextStyle(
-                              color: Color(0xff59595a), fontSize: 15)),
+                          style: TextStyle(color: Colors.white, fontSize: 15)),
                     ])),
             centerTitle: true,
           )),

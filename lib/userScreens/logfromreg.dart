@@ -1,10 +1,10 @@
+import 'package:Globtorch/tools/constants.dart';
+import 'package:Globtorch/userScreens/HomePage.dart';
+import 'package:flutter/material.dart';
 import 'dart:ui';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:flutter/material.dart';
-import 'package:globtorch/tools/constants.dart';
-import 'package:globtorch/userScreens/HomePage.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

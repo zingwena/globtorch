@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/chat/home_screen.dart';
+import 'package:Globtorch/userScreens/courses/coursereport.dart';
+import 'package:Globtorch/userScreens/courses/listcourses.dart';
+import 'package:Globtorch/userScreens/discussion/navigate_to_Discussions.dart';
+import 'package:Globtorch/userScreens/feedback.dart';
+import 'package:Globtorch/userScreens/library.dart';
+import 'package:Globtorch/userScreens/notification.dart';
+import 'package:Globtorch/userScreens/resources.dart';
+import 'package:Globtorch/userScreens/studentguide.dart';
+import 'package:Globtorch/userScreens/teachers.dart';
+import 'package:Globtorch/userScreens/welcomePage.dart';
 import 'package:flutter/services.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/chat/home_screen.dart';
-import 'package:globtorch/userScreens/courses/coursereport.dart';
-import 'package:globtorch/userScreens/courses/listcourses.dart';
-import 'package:globtorch/userScreens/feedback.dart';
-import 'package:globtorch/userScreens/library.dart';
-import 'package:globtorch/userScreens/discussion/navigate_to_Discussions.dart';
-import 'package:globtorch/userScreens/notification.dart';
-import 'package:globtorch/userScreens/resources.dart';
-import 'package:globtorch/userScreens/studentguide.dart';
-import 'package:globtorch/userScreens/teachers.dart';
-import 'package:globtorch/userScreens/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -444,8 +444,7 @@ class _HomePageState extends State<HomePage> {
                     });
                     if (isDeviceConnected) {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              Library(conn: isDeviceConnected)));
+                          builder: (BuildContext context) => Library()));
                     } else {
                       showDialog(
                           context: context,
@@ -883,7 +882,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("Library"),
                 onTap: () {
-                  Navigator.of(context).push(CupertinoPageRoute(
+                  Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) => Library()));
                 },
               ),
@@ -898,11 +897,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text("External Resources"),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ExtResources(isconn: isDeviceConnected)));
+                  if (isDeviceConnected) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ExtResources()));
+                  }
                 },
               ),
               ListTile(

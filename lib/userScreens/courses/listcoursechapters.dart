@@ -1,9 +1,10 @@
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/courses/listcoursetopics.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/courses/listcoursetopics.dart';
+
 
 class ListChapters extends StatefulWidget {
   final List coursechapters;
@@ -41,7 +42,7 @@ class _ListChaptersState extends State<ListChapters> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
           child: AppBar(
-            backgroundColor: Colors.green[400],
+            backgroundColor: Colors.green.shade900,
             flexibleSpace: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -52,13 +53,12 @@ class _ListChaptersState extends State<ListChapters> {
                               alignment: Alignment.center,
                               child: Text(subnamee,
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 20,
                                   )))),
                       SizedBox(height: 10),
                       Text("Subject Chapters",
-                          style: TextStyle(
-                              color: Color(0xff59595a), fontSize: 15)),
+                          style: TextStyle(color: Colors.white, fontSize: 15)),
                     ])),
             centerTitle: true,
           )),

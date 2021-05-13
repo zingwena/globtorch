@@ -1,5 +1,5 @@
+import 'package:Globtorch/userScreens/chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/chat/screens/chat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

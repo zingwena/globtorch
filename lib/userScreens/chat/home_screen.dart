@@ -1,6 +1,7 @@
+import 'package:Globtorch/userScreens/chat/widgets/favorite_contacts.dart';
+import 'package:Globtorch/userScreens/chat/widgets/recent_chats.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/userScreens/chat/widgets/favorite_contacts.dart';
-import 'package:globtorch/userScreens/chat/widgets/recent_chats.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({this.chtrom, this.chatsusers});

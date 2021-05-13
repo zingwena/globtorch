@@ -1,9 +1,9 @@
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:Globtorch/userScreens/assigment/assignmenttable.dart';
+import 'package:Globtorch/userScreens/chat/screens/chat_screen.dart';
+import 'package:Globtorch/userScreens/discussion/discfromnotifc.dart';
 import 'dart:convert';
-import 'package:connectivity/connectivity.dart';
-import 'package:globtorch/userScreens/assigment/assignmenttable.dart';
-import 'package:globtorch/userScreens/chat/screens/chat_screen.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -44,7 +44,7 @@ class _NotificationsState extends State<Notifications> {
       ),
       body: ListView.builder(
         itemCount: notific == null ? 0 : notific.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (context, index) {
           if (notific == null) {
             return Container(
               child: Column(
@@ -72,49 +72,102 @@ class _NotificationsState extends State<Notifications> {
                                   onTap: () async {
                                     var navtonotidetails =
                                         notific[index]['link'].toString();
-                                    List<String> strings =
-                                        navtonotidetails.split("/");
+                                    List strings = navtonotidetails.split("/");
                                     var lastindex = strings[strings.length - 1];
-                                    if (strings.contains("viewassign")) {
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      var token = prefs.getString('api_token');
-                                      final urlAssignment =
-                                          "https://globtorch.com/api/assignments/$lastindex?api_token=$token";
-                                      http.Response response = await http
-                                          .get(urlAssignment, headers: {
-                                        "Accept": "application/json"
-                                      });
-                                      var json = jsonDecode(response.body);
-                                      //print(json);
-                                      var assgnmentJson = json;
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  AssignmentList(
-                                                    assignmentdetails:
-                                                        assgnmentJson,
-                                                  )));
-                                    } else if (strings.contains("chat_room")) {
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      var token = prefs.getString('api_token');
-                                      //"https://globtorch.com/api/chat_room?api_token=$token";
-                                      final urlAssignment =
-                                          "https://globtorch.com/api/chat_room?api_token=$token";
-                                      http.Response response = await http
-                                          .get(urlAssignment, headers: {
-                                        "Accept": "application/json"
-                                      });
-                                      var json = jsonDecode(response.body);
-                                      //print(json);
-                                      var assgnmentJson = json;
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  ChatScreen()));
+
+                                    for (final listitems in strings) {
+                                      if (listitems == "viewassign") {
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        var token =
+                                            prefs.getString('api_token');
+                                        final urlAssignment =
+                                            "https://globtorch.com/api/assignments/$lastindex?api_token=$token";
+                                        http.Response response = await http
+                                            .get(urlAssignment, headers: {
+                                          "Accept": "application/json"
+                                        });
+                                        var json = jsonDecode(response.body);
+                                        //print(json);
+                                        var assgnmentJson = json;
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        AssignmentList(
+                                                          assignmentdetails:
+                                                              assgnmentJson,
+                                                        )));
+                                      } else if (listitems ==
+                                          "view_discussion") {
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        var token =
+                                            prefs.getString('api_token');
+
+                                        final discdetailUrl =
+                                            "https://globtorch.com/api/discussions/$lastindex?api_token=$token";
+                                        http.Response response = await http
+                                            .get(discdetailUrl, headers: {
+                                          "Accept": "application/json"
+                                        });
+                                        var json = jsonDecode(response.body);
+                                        List comments = json['comments'];
+                                        Map<String, dynamic> discdetails = json;
+                                        print(json['id']);
+                                        int discId = json['id'];
+                                        Navigator.push(
+                                            (context),
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        DiscussionFromNotif(
+                                                          discussionId: discId,
+                                                          detaildiscussion:
+                                                              discdetails,
+                                                          commentslist:
+                                                              comments,
+                                                        )));
+                                      } else if (listitems == "chat_room") {
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        var token =
+                                            prefs.getString('api_token');
+                                        final url =
+                                            "https://globtorch.com/api/chat_room/$lastindex?api_token=$token";
+                                        http.Response response = await http
+                                            .get(url, headers: {
+                                          "Accept": "application/json"
+                                        });
+                                        var json = jsonDecode(response.body);
+                                        var chatroom =
+                                            json['chatRoom']['messages'];
+                                        String currentuser =
+                                            json['currentUser']['name'];
+                                        int user = json['currentUser']['id'];
+                                        String userIdchatr = user.toString();
+                                        int chatroomcurrent =
+                                            json['chatRoom']['id'];
+                                        String chatroomcurrentId =
+                                            chatroomcurrent.toString();
+                                        // print(chatroom);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => ChatScreen(
+                                                  user: currentuser,
+                                                  messagechatroom: chatroom,
+                                                  chatroomuserId: userIdchatr,
+                                                  chatroomcurrent:
+                                                      chatroomcurrentId),
+                                            ));
+                                      } else {
+                                        print("kcbj");
+                                      }
                                     }
                                   },
                                 )

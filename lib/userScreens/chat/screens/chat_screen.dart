@@ -1,7 +1,6 @@
-import 'dart:ui';
-
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:connectivity/connectivity.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -185,7 +184,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         SnackBar(
                           backgroundColor: Colors.white,
                           content: const Text(
-                            'your message has been succesifully sent \n it will updated Shortly',
+                            'Your message has been succesifully sent \n it will updated Shortly',
                             style: TextStyle(color: Colors.green),
                           ),
                         ),

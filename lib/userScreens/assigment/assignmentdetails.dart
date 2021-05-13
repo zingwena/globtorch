@@ -193,7 +193,7 @@ class _AssignmentDetailsState extends State<AssignmentDetails> {
                                 child: Text(assgnmentD['name'],
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 20,
+                                      fontSize: 15,
                                     )))),
                         SizedBox(height: 10),
                         Text("Assignment Details",

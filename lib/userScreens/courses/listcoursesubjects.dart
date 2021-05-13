@@ -1,11 +1,12 @@
+import 'package:Globtorch/tools/style.dart';
+import 'package:Globtorch/userScreens/assigment/assignments.dart';
+import 'package:Globtorch/userScreens/courses/listcoursechapters.dart';
+import 'package:Globtorch/userScreens/discussion/discussions.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:globtorch/tools/style.dart';
-import 'package:globtorch/userScreens/assigment/assignments.dart';
-import 'package:globtorch/userScreens/courses/listcoursechapters.dart';
-import 'package:globtorch/userScreens/discussion/discussions.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -45,7 +46,7 @@ class _ListSubjectsState extends State<ListSubjects> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
           child: AppBar(
-            backgroundColor: Colors.green[200],
+            backgroundColor: Colors.green.shade900,
             flexibleSpace: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -56,13 +57,12 @@ class _ListSubjectsState extends State<ListSubjects> {
                               alignment: Alignment.center,
                               child: Text(coursenamee,
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  )))),
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)))),
                       SizedBox(height: 10),
                       Text("Course Subjects",
-                          style: TextStyle(
-                              color: Color(0xff59595a), fontSize: 15)),
+                          style: TextStyle(color: Colors.white, fontSize: 15)),
                     ])),
             centerTitle: true,
           )),
